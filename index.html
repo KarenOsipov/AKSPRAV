@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRO KURS — Справочник</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg: #F5F0DE;
+    --surface: #ECE3C6;
+    --surface-2: #E4D9B4;
+    --ink: #23291B;
+    --ink-soft: #5B6350;
+    --line: #D6C99B;
+    --accent: #B07F2A;
+    --accent-deep: #7A4A1E;
+    --green: #435C36;
+    --danger: #9C3B2E;
+    --radius: 3px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  h1,h2,h3, .brand, .field-label-lg{
+    font-family: 'Zilla Slab', Georgia, serif;
+  }
+  button, input, textarea, select{ font-family: inherit; font-size: inherit; color: inherit; }
+  a{ color: var(--accent-deep); }
+  ::selection{ background: var(--accent); color: #fff; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- layout shells ---------- */
+  #login-screen, #app-screen{ min-height:100vh; }
+  .hidden{ display:none !important; }
+
+  /* ---------- LOGIN ---------- */
+  #login-screen{
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .login-box{
+    width: 100%; max-width: 360px;
+  }
+  .brand-stamp{
+    display:flex; align-items:baseline; gap:10px; margin-bottom: 6px;
+    animation: stampIn 0.5s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes stampIn{
+    0%{ opacity:0; transform: scale(.92) rotate(-1.5deg); }
+    100%{ opacity:1; transform: scale(1) rotate(0); }
+  }
+  .brand{ font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+  .brand-sub{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 32px; }
+  .field{ margin-bottom: 16px; }
+  .field label{ display:block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
+  .field input{
+    width:100%; padding: 11px 12px; border: 1px solid var(--line);
+    background: #fff; border-radius: var(--radius); outline: none;
+  }
+  .field input:focus{ border-color: var(--accent-deep); box-shadow: 0 0 0 3px rgba(122,74,30,0.12); }
+  .btn{
+    border:none; cursor:pointer; border-radius: var(--radius);
+    padding: 11px 18px; font-size: 14.5px; font-weight: 600;
+  }
+  .btn:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+    outline: 2px solid var(--accent-deep); outline-offset: 2px;
+  }
+  .btn-primary{ background: var(--accent-deep); color:#fff; width:100%; }
+  .btn-primary:hover{ background:#603817; }
+  .btn-ghost{ background: transparent; color: var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background: var(--surface); }
+  .btn-small{ padding: 6px 10px; font-size: 13px; }
+  .form-msg{ font-size: 13.5px; margin: 14px 0 0; }
+  .form-msg.error{ color: var(--danger); }
+  .form-msg.ok{ color: var(--green); }
+
+  /* ---------- APP SHELL ---------- */
+  #app-screen{ display:flex; }
+  .sidebar{
+    width: 250px; flex-shrink:0; background: var(--surface);
+    border-right: 1px solid var(--line);
+    min-height:100vh; display:flex; flex-direction:column;
+    padding: 22px 0;
+  }
+  .sidebar-head{ padding: 0 20px 18px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .sidebar-head .brand{ font-size: 20px; }
+  .sidebar-head .brand-sub{ margin:2px 0 0; font-size:12px; }
+  .nav-list{ list-style:none; margin:0; padding:0; flex:1; overflow-y:auto; }
+  .nav-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding: 10px 20px; cursor:pointer; border-left: 3px solid transparent;
+    color: var(--ink-soft); transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .nav-item:hover{ background: var(--surface-2); }
+  .nav-item.active{ border-left-color: var(--accent); background: var(--surface-2); color: var(--ink); font-weight:600; }
+  .nav-item .count{ font-size:12px; color: var(--ink-soft); }
+  .nav-item .del-cat{ opacity:0; font-size:12px; color: var(--danger); background:none; border:none; cursor:pointer; padding:2px 4px; }
+  .nav-item:hover .del-cat{ opacity:1; }
+  .sidebar-foot{ padding: 14px 20px 0; border-top: 1px solid var(--line); margin-top:12px; }
+  .sidebar-foot .who{ font-size:12.5px; color: var(--ink-soft); margin-bottom:10px; }
+  .add-cat-row{ display:flex; gap:6px; margin-top:10px; }
+  .add-cat-row input{ flex:1; padding:7px 9px; border:1px solid var(--line); border-radius: var(--radius); }
+
+  .main{ flex:1; min-width:0; padding: 26px 40px 60px; max-width: 900px; }
+  .topbar{ display:flex; gap:14px; align-items:center; margin-bottom: 26px; }
+  .search-wrap{ position:relative; flex:1; }
+  .search-wrap input{
+    width:100%; padding: 11px 14px; border:1px solid var(--line);
+    border-radius: var(--radius); background:#fff;
+  }
+  .search-wrap input:focus{ outline:none; border-color: var(--accent-deep); box-shadow: 0 0 0 3px rgba(122,74,30,0.1); }
+
+  .crumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; cursor:pointer; }
+  .crumb:hover{ color: var(--accent-deep); }
+  .view{ animation: fadeIn .25s ease both; }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none; } }
+
+  .section-title{ font-size: 22px; font-weight:600; margin: 0 0 4px; }
+  .section-hint{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; }
+
+  .article-row{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding: 14px 0; border-bottom: 1px solid var(--line); cursor:pointer;
+  }
+  .article-row:hover .art-title{ color: var(--accent-deep); }
+  .art-title{ font-weight:600; transition: color .12s ease; }
+  .art-meta{ font-size:12.5px; color: var(--ink-soft); margin-top:3px; }
+  .art-actions{ display:flex; gap:6px; flex-shrink:0; }
+  .icon-btn{
+    background:none; border:1px solid var(--line); border-radius: var(--radius);
+    width:28px; height:28px; cursor:pointer; color: var(--ink-soft); font-size:14px;
+  }
+  .icon-btn:hover{ background: var(--surface); color: var(--ink); }
+  .icon-btn.danger:hover{ color: var(--danger); border-color: var(--danger); }
+
+  .article-detail h2{ font-size: 26px; margin: 4px 0 6px; }
+  .article-detail .art-meta{ margin-bottom: 20px; }
+  .article-body{ white-space: pre-wrap; font-size: 15.5px; max-width: 68ch; }
+  .tag-pill{
+    display:inline-block; font-size:12px; color: var(--green); background:#fff;
+    border:1px solid var(--line); padding:2px 9px; border-radius: 12px; margin: 0 6px 6px 0;
+  }
+
+  .empty-state{ padding: 30px 0; color: var(--ink-soft); }
+  .empty-state p{ margin: 0 0 14px; }
+
+  /* ---------- editor form ---------- */
+  .editor{
+    background:#fff; border:1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 22px;
+  }
+  .editor .field label{ font-family:'Inter'; }
+  .editor textarea{
+    width:100%; min-height:220px; padding:11px 12px; border:1px solid var(--line);
+    border-radius: var(--radius); resize:vertical;
+  }
+  .editor select{ width:100%; padding:10px 12px; border:1px solid var(--line); border-radius: var(--radius); background:#fff; }
+  .editor-actions{ display:flex; gap:10px; margin-top:6px; }
+
+  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; }
+
+  .loading{ padding:40px 0; color: var(--ink-soft); }
+
+  @media (max-width: 760px){
+    #app-screen{ flex-direction:column; }
+    .sidebar{ width:100%; min-height:auto; border-right:none; border-bottom:1px solid var(--line); }
+    .main{ padding: 22px 18px 50px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== ЭКРАН ВХОДА ============== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="brand-stamp"><span class="brand">AGRO KURS</span></div>
+    <p class="brand-sub">Справочник для сотрудников</p>
+    <div class="field">
+      <label for="login-email">Рабочая почта</label>
+      <input id="login-email" type="email" autocomplete="username" placeholder="ivan@agrokurs.kz">
+    </div>
+    <div class="field">
+      <label for="login-pass">Пароль</label>
+      <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" id="login-btn">Войти</button>
+    <p class="form-msg" id="login-msg"></p>
+  </div>
+</div>
+
+<!-- ============== ОСНОВНОЕ ПРИЛОЖЕНИЕ ============== -->
+<div id="app-screen" class="hidden">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="brand">AGRO KURS</div>
+      <p class="brand-sub">Справочник для сотрудников</p>
+    </div>
+    <ul class="nav-list" id="nav-list"></ul>
+    <div class="sidebar-foot">
+      <div class="who" id="who-am-i"></div>
+      <div id="add-cat-zone"></div>
+      <button class="btn btn-ghost btn-small" id="logout-btn" style="width:100%; margin-top:10px;">Выйти</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search-wrap">
+        <input id="search-input" type="text" placeholder="Найти инструкцию, правило, контакт…">
+      </div>
+      <button class="btn btn-ghost btn-small hidden" id="add-article-btn">+ Добавить статью</button>
+    </div>
+    <div id="main-view"></div>
+  </main>
+</div>
+
+<script>
+/* =========================================================================
+   НАСТРОЙКА: вставьте сюда данные вашего проекта Supabase (см. README.md)
+   ========================================================================= */
+const SUPABASE_URL = "ВСТАВЬТЕ_URL_ПРОЕКТА_SUPABASE";
+const SUPABASE_ANON_KEY = "ВСТАВЬТЕ_ANON_KEY";
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ---------------------------- state ---------------------------- */
+const state = {
+  session: null,
+  profile: null,
+  categories: [],
+  articles: [],
+  activeCategoryId: null,   // null = ничего не выбрано / поиск
+  activeArticleId: null,
+  searchQuery: "",
+  editing: null,            // { type:'article'|'category', data:{...} } или null
+};
+
+const $ = (sel) => document.querySelector(sel);
+const loginScreen = $("#login-screen");
+const appScreen = $("#app-screen");
+
+/* ---------------------------- auth ---------------------------- */
+$("#login-btn").addEventListener("click", doLogin);
+$("#login-pass").addEventListener("keydown", (e) => { if(e.key === "Enter") doLogin(); });
+
+async function doLogin(){
+  const email = $("#login-email").value.trim();
+  const password = $("#login-pass").value;
+  const msg = $("#login-msg");
+  msg.textContent = ""; msg.className = "form-msg";
+  if(!email || !password){
+    msg.textContent = "Введите почту и пароль."; msg.classList.add("error"); return;
+  }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){
+    msg.textContent = "Неверная почта или пароль. Проверьте данные и попробуйте снова.";
+    msg.classList.add("error");
+    return;
+  }
+  await onLoggedIn(data.session);
+}
+
+$("#logout-btn").addEventListener("click", async () => {
+  await sb.auth.signOut();
+  location.reload();
+});
+
+async function onLoggedIn(session){
+  state.session = session;
+  const { data: profile, error } = await sb.from("profiles").select("*").eq("id", session.user.id).single();
+  if(error){
+    console.error(error);
+  }
+  state.profile = profile || { role: "employee", full_name: session.user.email };
+  loginScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+  $("#who-am-i").textContent = (state.profile.full_name || session.user.email) +
+    (state.profile.role === "admin" ? " · администратор" : "");
+  if(state.profile.role === "admin"){
+    $("#add-article-btn").classList.remove("hidden");
+    renderAddCategoryZone();
+  }
+  await loadData();
+}
+
+async function loadData(){
+  const [{ data: cats }, { data: arts }] = await Promise.all([
+    sb.from("categories").select("*").order("sort_order", { ascending: true }),
+    sb.from("articles").select("*").order("created_at", { ascending: false }),
+  ]);
+  state.categories = cats || [];
+  state.articles = arts || [];
+  render();
+}
+
+/* ---------------------------- render: sidebar ---------------------------- */
+function renderAddCategoryZone(){
+  const zone = $("#add-cat-zone");
+  zone.innerHTML = `
+    <div class="add-cat-row">
+      <input id="new-cat-name" type="text" placeholder="Новый раздел…">
+      <button class="btn btn-ghost btn-small" id="new-cat-btn">+</button>
+    </div>`;
+  $("#new-cat-btn").addEventListener("click", async () => {
+    const name = $("#new-cat-name").value.trim();
+    if(!name) return;
+    const { error } = await sb.from("categories").insert({ name, sort_order: state.categories.length + 1 });
+    if(!error){ $("#new-cat-name").value = ""; await loadData(); }
+  });
+}
+
+function renderSidebar(){
+  const list = $("#nav-list");
+  const isAdmin = state.profile && state.profile.role === "admin";
+  list.innerHTML = state.categories.map(cat => {
+    const count = state.articles.filter(a => a.category_id === cat.id).length;
+    const active = state.activeCategoryId === cat.id && !state.searchQuery;
+    return `
+      <li class="nav-item ${active ? "active" : ""}" data-cat="${cat.id}">
+        <span>${escapeHtml(cat.name)}</span>
+        <span style="display:flex; align-items:center; gap:6px;">
+          <span class="count">${count}</span>
+          ${isAdmin ? `<button class="del-cat" data-delcat="${cat.id}" title="Удалить раздел">✕</button>` : ""}
+        </span>
+      </li>`;
+  }).join("");
+
+  list.querySelectorAll(".nav-item").forEach(el => {
+    el.addEventListener("click", (e) => {
+      if(e.target.closest("[data-delcat]")) return;
+      state.activeCategoryId = el.dataset.cat;
+      state.activeArticleId = null;
+      state.searchQuery = "";
+      $("#search-input").value = "";
+      render();
+    });
+  });
+  list.querySelectorAll("[data-delcat]").forEach(el => {
+    el.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if(!confirm("Удалить этот раздел? Статьи внутри останутся без раздела.")) return;
+      await sb.from("categories").delete().eq("id", el.dataset.delcat);
+      await loadData();
+    });
+  });
+}
+
+/* ---------------------------- render: main area ---------------------------- */
+$("#search-input").addEventListener("input", (e) => {
+  state.searchQuery = e.target.value.trim();
+  state.activeArticleId = null;
+  render();
+});
+
+$("#add-article-btn").addEventListener("click", () => {
+  state.editing = { type: "article", data: { title:"", content:"", tags:"", category_id: state.activeCategoryId || (state.categories[0] && state.categories[0].id) || "" } };
+  state.activeArticleId = null;
+  render();
+});
+
+function render(){
+  renderSidebar();
+  const view = $("#main-view");
+  const isAdmin = state.profile && state.profile.role === "admin";
+
+  if(state.editing){
+    view.innerHTML = renderEditor(state.editing, isAdmin);
+    attachEditorHandlers();
+    return;
+  }
+
+  if(state.searchQuery){
+    const q = state.searchQuery.toLowerCase();
+    const results = state.articles.filter(a =>
+      a.title.toLowerCase().includes(q) ||
+      (a.content || "").toLowerCase().includes(q) ||
+      (a.tags || []).some(t => t.toLowerCase().includes(q))
+    );
+    view.innerHTML = `
+      <div class="view">
+        <h2 class="section-title">Результаты поиска</h2>
+        <p class="section-hint">По запросу «${escapeHtml(state.searchQuery)}» найдено: ${results.length}</p>
+        ${results.length ? results.map(a => articleRowHtml(a, isAdmin)).join("") :
+          `<div class="empty-state"><p>Ничего не найдено. Попробуйте другое слово или посмотрите разделы в списке слева.</p></div>`}
+      </div>`;
+    attachRowHandlers();
+    return;
+  }
+
+  if(state.activeArticleId){
+    const a = state.articles.find(x => x.id === state.activeArticleId);
+    if(!a){ state.activeArticleId = null; return render(); }
+    const cat = state.categories.find(c => c.id === a.category_id);
+    view.innerHTML = `
+      <div class="view article-detail">
+        <div class="crumb" id="back-to-cat">← ${cat ? escapeHtml(cat.name) : "Все статьи"}</div>
+        <h2>${escapeHtml(a.title)}</h2>
+        <div class="art-meta">Обновлено ${formatDate(a.updated_at || a.created_at)}</div>
+        <div>${(a.tags||[]).map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("")}</div>
+        <div class="article-body">${escapeHtml(a.content)}</div>
+        ${isAdmin ? `
+          <div class="editor-actions" style="margin-top:24px;">
+            <button class="btn btn-ghost btn-small" id="edit-this">Редактировать</button>
+            <button class="btn btn-ghost btn-small" id="delete-this" style="color:var(--danger); border-color:var(--danger);">Удалить</button>
+          </div>` : ""}
+      </div>`;
+    $("#back-to-cat").addEventListener("click", () => { state.activeArticleId = null; render(); });
+    if(isAdmin){
+      $("#edit-this").addEventListener("click", () => {
+        state.editing = { type:"article", data: { ...a, tags: (a.tags||[]).join(", ") } };
+        render();
+      });
+      $("#delete-this").addEventListener("click", async () => {
+        if(!confirm("Удалить эту статью без возможности восстановления?")) return;
+        await sb.from("articles").delete().eq("id", a.id);
+        state.activeArticleId = null;
+        await loadData();
+      });
+    }
+    return;
+  }
+
+  if(state.activeCategoryId){
+    const cat = state.categories.find(c => c.id === state.activeCategoryId);
+    const list = state.articles.filter(a => a.category_id === state.activeCategoryId);
+    view.innerHTML = `
+      <div class="view">
+        <h2 class="section-title">${cat ? escapeHtml(cat.name) : "Раздел"}</h2>
+        <p class="section-hint">${list.length ? `Статей в разделе: ${list.length}` : "Пока пусто"}</p>
+        ${list.length ? list.map(a => articleRowHtml(a, isAdmin)).join("") :
+          `<div class="empty-state"><p>В этом разделе пока нет статей.</p>
+            ${isAdmin ? `<button class="btn btn-ghost btn-small" id="add-first">Добавить первую статью</button>` : ""}
+          </div>`}
+      </div>`;
+    attachRowHandlers();
+    if(isAdmin && !list.length){
+      $("#add-first")?.addEventListener("click", () => $("#add-article-btn").click());
+    }
+    return;
+  }
+
+  // ничего не выбрано — стартовый экран
+  view.innerHTML = `
+    <div class="view">
+      <h2 class="section-title">Выберите раздел слева или воспользуйтесь поиском</h2>
+      <p class="section-hint">Всего статей в справочнике: ${state.articles.length}</p>
+    </div>`;
+}
+
+function articleRowHtml(a, isAdmin){
+  const cat = state.categories.find(c => c.id === a.category_id);
+  return `
+    <div class="article-row" data-open="${a.id}">
+      <div>
+        <div class="art-title">${escapeHtml(a.title)}</div>
+        <div class="art-meta">${cat ? escapeHtml(cat.name) + " · " : ""}${formatDate(a.updated_at || a.created_at)}</div>
+      </div>
+      ${isAdmin ? `
+        <div class="art-actions">
+          <button class="icon-btn" data-edit="${a.id}" title="Редактировать">✎</button>
+          <button class="icon-btn danger" data-del="${a.id}" title="Удалить">🗑</button>
+        </div>` : ""}
+    </div>`;
+}
+
+function attachRowHandlers(){
+  document.querySelectorAll("[data-open]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      if(e.target.closest("[data-edit],[data-del]")) return;
+      state.activeArticleId = el.dataset.open;
+      render();
+    });
+  });
+  document.querySelectorAll("[data-edit]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const a = state.articles.find(x => x.id === el.dataset.edit);
+      state.editing = { type:"article", data: { ...a, tags: (a.tags||[]).join(", ") } };
+      render();
+    });
+  });
+  document.querySelectorAll("[data-del]").forEach(el => {
+    el.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if(!confirm("Удалить эту статью без возможности восстановления?")) return;
+      await sb.from("articles").delete().eq("id", el.dataset.del);
+      await loadData();
+    });
+  });
+}
+
+/* ---------------------------- editor (add/edit article) ---------------------------- */
+function renderEditor(editing, isAdmin){
+  if(!isAdmin) return "";
+  const d = editing.data;
+  const isNew = !d.id;
+  const catOptions = state.categories.map(c =>
+    `<option value="${c.id}" ${c.id === d.category_id ? "selected":""}>${escapeHtml(c.name)}</option>`).join("");
+  return `
+    <div class="view">
+      <h2 class="section-title">${isNew ? "Новая статья" : "Редактирование статьи"}</h2>
+      <div class="editor">
+        <div class="field">
+          <label>Заголовок</label>
+          <input id="ed-title" type="text" value="${escapeAttr(d.title||"")}" placeholder="Например: Порядок выдачи топливных карт">
+        </div>
+        <div class="field">
+          <label>Раздел</label>
+          <select id="ed-cat">${catOptions}</select>
+        </div>
+        <div class="field">
+          <label>Теги через запятую (для поиска)</label>
+          <input id="ed-tags" type="text" value="${escapeAttr(d.tags||"")}" placeholder="топливо, автопарк, снабжение">
+        </div>
+        <div class="field">
+          <label>Текст статьи</label>
+          <textarea id="ed-content" placeholder="Подробное описание, шаги, контакты…">${escapeHtml(d.content||"")}</textarea>
+        </div>
+        <div class="editor-actions">
+          <button class="btn btn-primary" id="ed-save" style="width:auto;">Сохранить</button>
+          <button class="btn btn-ghost btn-small" id="ed-cancel">Отмена</button>
+        </div>
+        <p class="form-msg" id="ed-msg"></p>
+      </div>
+    </div>`;
+}
+
+function attachEditorHandlers(){
+  $("#ed-cancel").addEventListener("click", () => { state.editing = null; render(); });
+  $("#ed-save").addEventListener("click", async () => {
+    const title = $("#ed-title").value.trim();
+    const category_id = $("#ed-cat").value;
+    const tags = $("#ed-tags").value.split(",").map(t => t.trim()).filter(Boolean);
+    const content = $("#ed-content").value.trim();
+    const msg = $("#ed-msg");
+    if(!title || !content){
+      msg.textContent = "Заполните заголовок и текст статьи."; msg.className = "form-msg error"; return;
+    }
+    const payload = { title, category_id, tags, content, updated_at: new Date().toISOString() };
+    let error;
+    if(state.editing.data.id){
+      ({ error } = await sb.from("articles").update(payload).eq("id", state.editing.data.id));
+    } else {
+      payload.created_by = state.session.user.id;
+      ({ error } = await sb.from("articles").insert(payload));
+    }
+    if(error){
+      msg.textContent = "Не удалось сохранить: " + error.message; msg.className = "form-msg error"; return;
+    }
+    state.editing = null;
+    await loadData();
+  });
+}
+
+/* ---------------------------- helpers ---------------------------- */
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+function formatDate(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("ru-RU", { day:"2-digit", month:"long", year:"numeric" });
+}
+
+/* ---------------------------- boot ---------------------------- */
+(async function boot(){
+  const { data } = await sb.auth.getSession();
+  if(data.session){
+    await onLoggedIn(data.session);
+  }
+})();
+</script>
+</body>
+</html>
