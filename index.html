@@ -3,24 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AGRO KURS — Справочник</title>
+<title>АГРО КУРС — Справочник</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --bg: #F5F0DE;
-    --surface: #ECE3C6;
-    --surface-2: #E4D9B4;
-    --ink: #23291B;
-    --ink-soft: #5B6350;
-    --line: #D6C99B;
-    --accent: #B07F2A;
-    --accent-deep: #7A4A1E;
-    --green: #435C36;
-    --danger: #9C3B2E;
-    --radius: 3px;
+    --navy: #23245B;
+    --navy-light: #34366F;
+    --navy-lighter: #454785;
+    --red: #C81225;
+    --red-deep: #96101F;
+    --bg: #F3F4F8;
+    --surface: #FFFFFF;
+    --line: #E1E3EA;
+    --ink: #1B1E2A;
+    --ink-soft: #6B7080;
+    --ink-faint: #9A9EAD;
+    --radius: 12px;
+    --radius-sm: 8px;
   }
   *{ box-sizing: border-box; }
   html,body{ height:100%; }
@@ -32,152 +34,142 @@
     font-size: 15px;
     line-height: 1.55;
   }
-  h1,h2,h3, .brand, .field-label-lg{
-    font-family: 'Zilla Slab', Georgia, serif;
-  }
+  h1,h2,h3, .brand{ font-family: 'Manrope', system-ui, sans-serif; font-weight: 700; }
   button, input, textarea, select{ font-family: inherit; font-size: inherit; color: inherit; }
-  a{ color: var(--accent-deep); }
-  ::selection{ background: var(--accent); color: #fff; }
-  @media (prefers-reduced-motion: reduce){
-    *{ animation: none !important; transition: none !important; }
-  }
-
-  /* ---------- layout shells ---------- */
-  #login-screen, #app-screen{ min-height:100vh; }
+  ::selection{ background: var(--red); color:#fff; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
   .hidden{ display:none !important; }
 
   /* ---------- LOGIN ---------- */
   #login-screen{
-    display:flex; align-items:center; justify-content:center;
-    padding: 24px;
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding: 24px; background: var(--bg);
   }
-  .login-box{
-    width: 100%; max-width: 360px;
+  .login-card{
+    width:100%; max-width: 380px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 36px 32px 32px; box-shadow: 0 1px 2px rgba(27,30,42,0.04);
+    animation: cardIn .45s cubic-bezier(.2,.8,.3,1.1) both;
   }
-  .brand-stamp{
-    display:flex; align-items:baseline; gap:10px; margin-bottom: 6px;
-    animation: stampIn 0.5s cubic-bezier(.2,.9,.3,1.2) both;
-  }
-  @keyframes stampIn{
-    0%{ opacity:0; transform: scale(.92) rotate(-1.5deg); }
-    100%{ opacity:1; transform: scale(1) rotate(0); }
-  }
-  .brand{ font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
-  .brand-sub{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 32px; }
+  @keyframes cardIn{ 0%{ opacity:0; transform: translateY(8px) scale(.98); } 100%{ opacity:1; transform:none; } }
+  .logo-wrap{ display:flex; justify-content:center; margin-bottom: 22px; }
+  .logo-wrap img{ height: 64px; width:auto; }
+  .brand-sub{ color: var(--ink-soft); font-size: 13px; text-align:center; margin: 0 0 28px; }
   .field{ margin-bottom: 16px; }
-  .field label{ display:block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
+  .field label{ display:block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; font-weight:500; }
   .field input{
-    width:100%; padding: 11px 12px; border: 1px solid var(--line);
-    background: #fff; border-radius: var(--radius); outline: none;
+    width:100%; padding: 11px 13px; border: 1px solid var(--line);
+    background: var(--surface); border-radius: var(--radius-sm); outline: none;
   }
-  .field input:focus{ border-color: var(--accent-deep); box-shadow: 0 0 0 3px rgba(122,74,30,0.12); }
-  .btn{
-    border:none; cursor:pointer; border-radius: var(--radius);
-    padding: 11px 18px; font-size: 14.5px; font-weight: 600;
-  }
-  .btn:focus-visible, a:focus-visible, [tabindex]:focus-visible{
-    outline: 2px solid var(--accent-deep); outline-offset: 2px;
-  }
-  .btn-primary{ background: var(--accent-deep); color:#fff; width:100%; }
-  .btn-primary:hover{ background:#603817; }
+  .field input:focus{ border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,18,37,0.12); }
+  .btn{ border:none; cursor:pointer; border-radius: var(--radius-sm); padding: 11px 18px; font-size: 14.5px; font-weight: 600; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+  .btn:focus-visible{ outline: 2px solid var(--navy); outline-offset: 2px; }
+  .btn-primary{ background: var(--red); color:#fff; width:100%; }
+  .btn-primary:hover{ background: var(--red-deep); }
   .btn-ghost{ background: transparent; color: var(--ink-soft); border:1px solid var(--line); }
-  .btn-ghost:hover{ background: var(--surface); }
-  .btn-small{ padding: 6px 10px; font-size: 13px; }
+  .btn-ghost:hover{ background: var(--bg); color: var(--ink); }
+  .btn-small{ padding: 7px 12px; font-size: 13px; }
   .form-msg{ font-size: 13.5px; margin: 14px 0 0; }
-  .form-msg.error{ color: var(--danger); }
-  .form-msg.ok{ color: var(--green); }
+  .form-msg.error{ color: var(--red); }
+  .form-msg.ok{ color: #1B7A4A; }
 
   /* ---------- APP SHELL ---------- */
-  #app-screen{ display:flex; }
+  #app-screen{ display:flex; min-height:100vh; }
   .sidebar{
-    width: 250px; flex-shrink:0; background: var(--surface);
-    border-right: 1px solid var(--line);
-    min-height:100vh; display:flex; flex-direction:column;
-    padding: 22px 0;
+    width: 264px; flex-shrink:0; background: var(--navy);
+    display:flex; flex-direction:column; padding: 20px 18px;
   }
-  .sidebar-head{ padding: 0 20px 18px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
-  .sidebar-head .brand{ font-size: 20px; }
-  .sidebar-head .brand-sub{ margin:2px 0 0; font-size:12px; }
-  .nav-list{ list-style:none; margin:0; padding:0; flex:1; overflow-y:auto; }
+  .sidebar-logo{
+    background:#fff; border-radius: var(--radius); padding: 14px 10px;
+    display:flex; justify-content:center; margin-bottom: 22px;
+  }
+  .sidebar-logo img{ height: 46px; width:auto; }
+  .nav-list{ list-style:none; margin:0 0 8px; padding:0; flex:1; overflow-y:auto; }
   .nav-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
-    padding: 10px 20px; cursor:pointer; border-left: 3px solid transparent;
-    color: var(--ink-soft); transition: background .15s ease, border-color .15s ease, color .15s ease;
+    padding: 11px 12px; margin-bottom: 3px; cursor:pointer; border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.72); border-left: 3px solid transparent;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
   }
-  .nav-item:hover{ background: var(--surface-2); }
-  .nav-item.active{ border-left-color: var(--accent); background: var(--surface-2); color: var(--ink); font-weight:600; }
-  .nav-item .count{ font-size:12px; color: var(--ink-soft); }
-  .nav-item .del-cat{ opacity:0; font-size:12px; color: var(--danger); background:none; border:none; cursor:pointer; padding:2px 4px; }
+  .nav-item:hover{ background: var(--navy-light); color:#fff; }
+  .nav-item.active{ background: var(--navy-light); color:#fff; border-left-color: var(--red); font-weight:600; }
+  .nav-item .count{ font-size:12px; color: rgba(255,255,255,0.5); }
+  .nav-item .del-cat{ opacity:0; font-size:12px; color:#F5A3AB; background:none; border:none; cursor:pointer; padding:2px 4px; }
   .nav-item:hover .del-cat{ opacity:1; }
-  .sidebar-foot{ padding: 14px 20px 0; border-top: 1px solid var(--line); margin-top:12px; }
-  .sidebar-foot .who{ font-size:12.5px; color: var(--ink-soft); margin-bottom:10px; }
-  .add-cat-row{ display:flex; gap:6px; margin-top:10px; }
-  .add-cat-row input{ flex:1; padding:7px 9px; border:1px solid var(--line); border-radius: var(--radius); }
+  .sidebar-foot{ border-top: 1px solid rgba(255,255,255,0.12); padding-top:14px; }
+  .who{ font-size:12.5px; color: rgba(255,255,255,0.55); margin-bottom:10px; word-break:break-all; }
+  .add-cat-row{ display:flex; gap:6px; margin-bottom:10px; }
+  .add-cat-row input{
+    flex:1; padding:8px 10px; border:1px solid rgba(255,255,255,0.2); border-radius: var(--radius-sm);
+    background: var(--navy-light); color:#fff;
+  }
+  .add-cat-row input::placeholder{ color: rgba(255,255,255,0.45); }
+  .add-cat-row .btn{ background: var(--red); color:#fff; }
+  .sidebar-foot .btn-ghost{ width:100%; color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.2); }
+  .sidebar-foot .btn-ghost:hover{ background: var(--navy-light); color:#fff; }
 
-  .main{ flex:1; min-width:0; padding: 26px 40px 60px; max-width: 900px; }
-  .topbar{ display:flex; gap:14px; align-items:center; margin-bottom: 26px; }
+  .main{ flex:1; min-width:0; padding: 28px 36px 60px; max-width: 960px; margin:0 auto; width:100%; }
+  .topbar{ display:flex; gap:14px; align-items:center; margin-bottom: 22px; }
   .search-wrap{ position:relative; flex:1; }
   .search-wrap input{
-    width:100%; padding: 11px 14px; border:1px solid var(--line);
-    border-radius: var(--radius); background:#fff;
+    width:100%; padding: 12px 16px; border:1px solid var(--line);
+    border-radius: var(--radius); background: var(--surface);
   }
-  .search-wrap input:focus{ outline:none; border-color: var(--accent-deep); box-shadow: 0 0 0 3px rgba(122,74,30,0.1); }
+  .search-wrap input:focus{ outline:none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,18,37,0.1); }
 
-  .crumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; cursor:pointer; }
-  .crumb:hover{ color: var(--accent-deep); }
-  .view{ animation: fadeIn .25s ease both; }
+  .panel{
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 28px; animation: fadeIn .25s ease both;
+  }
   @keyframes fadeIn{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none; } }
 
-  .section-title{ font-size: 22px; font-weight:600; margin: 0 0 4px; }
+  .crumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 10px; cursor:pointer; display:inline-block; }
+  .crumb:hover{ color: var(--red); }
+
+  .section-title{ font-size: 22px; margin: 0 0 4px; }
   .section-hint{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; }
 
   .article-row{
     display:flex; justify-content:space-between; align-items:center; gap:12px;
-    padding: 14px 0; border-bottom: 1px solid var(--line); cursor:pointer;
+    padding: 15px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    cursor:pointer; margin-bottom: 10px; transition: border-color .12s ease, background .12s ease;
   }
-  .article-row:hover .art-title{ color: var(--accent-deep); }
+  .article-row:hover{ border-color: var(--navy-lighter); background: var(--bg); }
+  .article-row:hover .art-title{ color: var(--red); }
   .art-title{ font-weight:600; transition: color .12s ease; }
   .art-meta{ font-size:12.5px; color: var(--ink-soft); margin-top:3px; }
   .art-actions{ display:flex; gap:6px; flex-shrink:0; }
   .icon-btn{
-    background:none; border:1px solid var(--line); border-radius: var(--radius);
-    width:28px; height:28px; cursor:pointer; color: var(--ink-soft); font-size:14px;
+    background:none; border:1px solid var(--line); border-radius: var(--radius-sm);
+    width:30px; height:30px; cursor:pointer; color: var(--ink-soft); font-size:14px;
   }
-  .icon-btn:hover{ background: var(--surface); color: var(--ink); }
-  .icon-btn.danger:hover{ color: var(--danger); border-color: var(--danger); }
+  .icon-btn:hover{ background: var(--bg); color: var(--ink); }
+  .icon-btn.danger:hover{ color: var(--red); border-color: var(--red); }
 
-  .article-detail h2{ font-size: 26px; margin: 4px 0 6px; }
-  .article-detail .art-meta{ margin-bottom: 20px; }
+  .article-detail h2{ font-size: 25px; margin: 4px 0 6px; }
+  .article-detail .art-meta{ margin-bottom: 18px; }
   .article-body{ white-space: pre-wrap; font-size: 15.5px; max-width: 68ch; }
   .tag-pill{
-    display:inline-block; font-size:12px; color: var(--green); background:#fff;
-    border:1px solid var(--line); padding:2px 9px; border-radius: 12px; margin: 0 6px 6px 0;
+    display:inline-block; font-size:12px; color: var(--navy); background: var(--bg);
+    border:1px solid var(--line); padding:3px 10px; border-radius: 20px; margin: 0 6px 6px 0; font-weight:500;
   }
 
-  .empty-state{ padding: 30px 0; color: var(--ink-soft); }
+  .empty-state{ padding: 20px 0; color: var(--ink-soft); }
   .empty-state p{ margin: 0 0 14px; }
 
-  /* ---------- editor form ---------- */
-  .editor{
-    background:#fff; border:1px solid var(--line); border-radius: var(--radius);
-    padding: 22px; margin-bottom: 22px;
-  }
-  .editor .field label{ font-family:'Inter'; }
+  .editor .field label{ font-weight:500; }
   .editor textarea{
-    width:100%; min-height:220px; padding:11px 12px; border:1px solid var(--line);
-    border-radius: var(--radius); resize:vertical;
+    width:100%; min-height:220px; padding:12px 13px; border:1px solid var(--line);
+    border-radius: var(--radius-sm); resize:vertical; background: var(--surface);
   }
-  .editor select{ width:100%; padding:10px 12px; border:1px solid var(--line); border-radius: var(--radius); background:#fff; }
-  .editor-actions{ display:flex; gap:10px; margin-top:6px; }
+  .editor textarea:focus, .editor select:focus{ outline:none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,18,37,0.1); }
+  .editor select{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius: var(--radius-sm); background:var(--surface); }
+  .editor-actions{ display:flex; gap:10px; margin-top:18px; }
 
-  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; }
-
-  .loading{ padding:40px 0; color: var(--ink-soft); }
-
-  @media (max-width: 760px){
+  @media (max-width: 780px){
     #app-screen{ flex-direction:column; }
-    .sidebar{ width:100%; min-height:auto; border-right:none; border-bottom:1px solid var(--line); }
-    .main{ padding: 22px 18px 50px; }
+    .sidebar{ width:100%; }
+    .main{ padding: 20px 16px 50px; }
   }
 </style>
 </head>
@@ -185,8 +177,10 @@
 
 <!-- ============== ЭКРАН ВХОДА ============== -->
 <div id="login-screen">
-  <div class="login-box">
-    <div class="brand-stamp"><span class="brand">AGRO KURS</span></div>
+  <div class="login-card">
+    <div class="logo-wrap">
+      <img src="agrokurs-logo.png" alt="Агро Курс" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'brand',textContent:'АГРО КУРС',style:'font-size:22px;color:var(--navy)'}))">
+    </div>
     <p class="brand-sub">Справочник для сотрудников</p>
     <div class="field">
       <label for="login-email">Рабочая почта</label>
@@ -204,15 +198,14 @@
 <!-- ============== ОСНОВНОЕ ПРИЛОЖЕНИЕ ============== -->
 <div id="app-screen" class="hidden">
   <aside class="sidebar">
-    <div class="sidebar-head">
-      <div class="brand">AGRO KURS</div>
-      <p class="brand-sub">Справочник для сотрудников</p>
+    <div class="sidebar-logo">
+      <img src="agrokurs-logo.png" alt="Агро Курс" onerror="this.parentElement.remove()">
     </div>
     <ul class="nav-list" id="nav-list"></ul>
     <div class="sidebar-foot">
       <div class="who" id="who-am-i"></div>
       <div id="add-cat-zone"></div>
-      <button class="btn btn-ghost btn-small" id="logout-btn" style="width:100%; margin-top:10px;">Выйти</button>
+      <button class="btn btn-ghost btn-small" id="logout-btn">Выйти</button>
     </div>
   </aside>
 
@@ -221,17 +214,18 @@
       <div class="search-wrap">
         <input id="search-input" type="text" placeholder="Найти инструкцию, правило, контакт…">
       </div>
-      <button class="btn btn-ghost btn-small hidden" id="add-article-btn">+ Добавить статью</button>
+      <button class="btn btn-small hidden" id="add-article-btn" style="background:var(--red); color:#fff; flex-shrink:0;">+ Добавить статью</button>
     </div>
     <div id="main-view"></div>
   </main>
 </div>
+
 <script>
 /* =========================================================================
    НАСТРОЙКА: вставьте сюда данные вашего проекта Supabase (см. README.md)
    ========================================================================= */
-const SUPABASE_URL = "https://iateslqjjrdzkcifvfje.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhdGVzbHFqanJkemtjaWZ2ZmplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxNjUxOTIsImV4cCI6MjEwMzc0MTE5Mn0.b4dy8NH4--AmHr95IkDXhdiGyU-pjd8PYOtE2EZyzBw";
+const SUPABASE_URL = "ВСТАВЬТЕ_URL_ПРОЕКТА_SUPABASE";
+const SUPABASE_ANON_KEY = "ВСТАВЬТЕ_ANON_KEY";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -241,10 +235,10 @@ const state = {
   profile: null,
   categories: [],
   articles: [],
-  activeCategoryId: null,   // null = ничего не выбрано / поиск
+  activeCategoryId: null,
   activeArticleId: null,
   searchQuery: "",
-  editing: null,            // { type:'article'|'category', data:{...} } или null
+  editing: null,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -280,9 +274,7 @@ $("#logout-btn").addEventListener("click", async () => {
 async function onLoggedIn(session){
   state.session = session;
   const { data: profile, error } = await sb.from("profiles").select("*").eq("id", session.user.id).single();
-  if(error){
-    console.error(error);
-  }
+  if(error){ console.error(error); }
   state.profile = profile || { role: "employee", full_name: session.user.email };
   loginScreen.classList.add("hidden");
   appScreen.classList.remove("hidden");
@@ -311,7 +303,7 @@ function renderAddCategoryZone(){
   zone.innerHTML = `
     <div class="add-cat-row">
       <input id="new-cat-name" type="text" placeholder="Новый раздел…">
-      <button class="btn btn-ghost btn-small" id="new-cat-btn">+</button>
+      <button class="btn btn-small" id="new-cat-btn">+</button>
     </div>`;
   $("#new-cat-btn").addEventListener("click", async () => {
     const name = $("#new-cat-name").value.trim();
@@ -326,7 +318,7 @@ function renderSidebar(){
   const isAdmin = state.profile && state.profile.role === "admin";
   list.innerHTML = state.categories.map(cat => {
     const count = state.articles.filter(a => a.category_id === cat.id).length;
-    const active = state.activeCategoryId === cat.id && !state.searchQuery;
+    const active = state.activeCategoryId === cat.id && !state.searchQuery && !state.activeArticleId;
     return `
       <li class="nav-item ${active ? "active" : ""}" data-cat="${cat.id}">
         <span>${escapeHtml(cat.name)}</span>
@@ -375,27 +367,11 @@ function render(){
   const view = $("#main-view");
   const isAdmin = state.profile && state.profile.role === "admin";
 
+  // Порядок проверок важен: открытая статья должна показываться
+  // даже если в строке поиска остался текст (это и был баг).
   if(state.editing){
-    view.innerHTML = renderEditor(state.editing, isAdmin);
+    view.innerHTML = `<div class="panel">${renderEditor(state.editing, isAdmin)}</div>`;
     attachEditorHandlers();
-    return;
-  }
-
-  if(state.searchQuery){
-    const q = state.searchQuery.toLowerCase();
-    const results = state.articles.filter(a =>
-      a.title.toLowerCase().includes(q) ||
-      (a.content || "").toLowerCase().includes(q) ||
-      (a.tags || []).some(t => t.toLowerCase().includes(q))
-    );
-    view.innerHTML = `
-      <div class="view">
-        <h2 class="section-title">Результаты поиска</h2>
-        <p class="section-hint">По запросу «${escapeHtml(state.searchQuery)}» найдено: ${results.length}</p>
-        ${results.length ? results.map(a => articleRowHtml(a, isAdmin)).join("") :
-          `<div class="empty-state"><p>Ничего не найдено. Попробуйте другое слово или посмотрите разделы в списке слева.</p></div>`}
-      </div>`;
-    attachRowHandlers();
     return;
   }
 
@@ -403,17 +379,18 @@ function render(){
     const a = state.articles.find(x => x.id === state.activeArticleId);
     if(!a){ state.activeArticleId = null; return render(); }
     const cat = state.categories.find(c => c.id === a.category_id);
+    const backLabel = state.searchQuery ? "Результаты поиска" : (cat ? cat.name : "Все статьи");
     view.innerHTML = `
-      <div class="view article-detail">
-        <div class="crumb" id="back-to-cat">← ${cat ? escapeHtml(cat.name) : "Все статьи"}</div>
+      <div class="panel article-detail">
+        <div class="crumb" id="back-to-cat">← ${escapeHtml(backLabel)}</div>
         <h2>${escapeHtml(a.title)}</h2>
         <div class="art-meta">Обновлено ${formatDate(a.updated_at || a.created_at)}</div>
         <div>${(a.tags||[]).map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("")}</div>
         <div class="article-body">${escapeHtml(a.content)}</div>
         ${isAdmin ? `
-          <div class="editor-actions" style="margin-top:24px;">
+          <div class="editor-actions">
             <button class="btn btn-ghost btn-small" id="edit-this">Редактировать</button>
-            <button class="btn btn-ghost btn-small" id="delete-this" style="color:var(--danger); border-color:var(--danger);">Удалить</button>
+            <button class="btn btn-ghost btn-small" id="delete-this" style="color:var(--red); border-color:var(--red);">Удалить</button>
           </div>` : ""}
       </div>`;
     $("#back-to-cat").addEventListener("click", () => { state.activeArticleId = null; render(); });
@@ -432,11 +409,29 @@ function render(){
     return;
   }
 
+  if(state.searchQuery){
+    const q = state.searchQuery.toLowerCase();
+    const results = state.articles.filter(a =>
+      a.title.toLowerCase().includes(q) ||
+      (a.content || "").toLowerCase().includes(q) ||
+      (a.tags || []).some(t => t.toLowerCase().includes(q))
+    );
+    view.innerHTML = `
+      <div class="panel">
+        <h2 class="section-title">Результаты поиска</h2>
+        <p class="section-hint">По запросу «${escapeHtml(state.searchQuery)}» найдено: ${results.length}</p>
+        ${results.length ? results.map(a => articleRowHtml(a, isAdmin)).join("") :
+          `<div class="empty-state"><p>Ничего не найдено. Попробуйте другое слово или посмотрите разделы в списке слева.</p></div>`}
+      </div>`;
+    attachRowHandlers();
+    return;
+  }
+
   if(state.activeCategoryId){
     const cat = state.categories.find(c => c.id === state.activeCategoryId);
     const list = state.articles.filter(a => a.category_id === state.activeCategoryId);
     view.innerHTML = `
-      <div class="view">
+      <div class="panel">
         <h2 class="section-title">${cat ? escapeHtml(cat.name) : "Раздел"}</h2>
         <p class="section-hint">${list.length ? `Статей в разделе: ${list.length}` : "Пока пусто"}</p>
         ${list.length ? list.map(a => articleRowHtml(a, isAdmin)).join("") :
@@ -451,9 +446,8 @@ function render(){
     return;
   }
 
-  // ничего не выбрано — стартовый экран
   view.innerHTML = `
-    <div class="view">
+    <div class="panel">
       <h2 class="section-title">Выберите раздел слева или воспользуйтесь поиском</h2>
       <p class="section-hint">Всего статей в справочнике: ${state.articles.length}</p>
     </div>`;
@@ -501,7 +495,7 @@ function attachRowHandlers(){
   });
 }
 
-/* ---------------------------- editor (add/edit article) ---------------------------- */
+/* ---------------------------- editor ---------------------------- */
 function renderEditor(editing, isAdmin){
   if(!isAdmin) return "";
   const d = editing.data;
@@ -509,31 +503,29 @@ function renderEditor(editing, isAdmin){
   const catOptions = state.categories.map(c =>
     `<option value="${c.id}" ${c.id === d.category_id ? "selected":""}>${escapeHtml(c.name)}</option>`).join("");
   return `
-    <div class="view">
-      <h2 class="section-title">${isNew ? "Новая статья" : "Редактирование статьи"}</h2>
-      <div class="editor">
-        <div class="field">
-          <label>Заголовок</label>
-          <input id="ed-title" type="text" value="${escapeAttr(d.title||"")}" placeholder="Например: Порядок выдачи топливных карт">
-        </div>
-        <div class="field">
-          <label>Раздел</label>
-          <select id="ed-cat">${catOptions}</select>
-        </div>
-        <div class="field">
-          <label>Теги через запятую (для поиска)</label>
-          <input id="ed-tags" type="text" value="${escapeAttr(d.tags||"")}" placeholder="топливо, автопарк, снабжение">
-        </div>
-        <div class="field">
-          <label>Текст статьи</label>
-          <textarea id="ed-content" placeholder="Подробное описание, шаги, контакты…">${escapeHtml(d.content||"")}</textarea>
-        </div>
-        <div class="editor-actions">
-          <button class="btn btn-primary" id="ed-save" style="width:auto;">Сохранить</button>
-          <button class="btn btn-ghost btn-small" id="ed-cancel">Отмена</button>
-        </div>
-        <p class="form-msg" id="ed-msg"></p>
+    <h2 class="section-title">${isNew ? "Новая статья" : "Редактирование статьи"}</h2>
+    <div class="editor">
+      <div class="field">
+        <label>Заголовок</label>
+        <input id="ed-title" type="text" value="${escapeAttr(d.title||"")}" placeholder="Например: Порядок выдачи топливных карт">
       </div>
+      <div class="field">
+        <label>Раздел</label>
+        <select id="ed-cat">${catOptions}</select>
+      </div>
+      <div class="field">
+        <label>Теги через запятую (для поиска)</label>
+        <input id="ed-tags" type="text" value="${escapeAttr(d.tags||"")}" placeholder="топливо, автопарк, снабжение">
+      </div>
+      <div class="field">
+        <label>Текст статьи</label>
+        <textarea id="ed-content" placeholder="Подробное описание, шаги, контакты…">${escapeHtml(d.content||"")}</textarea>
+      </div>
+      <div class="editor-actions">
+        <button class="btn" style="background:var(--red); color:#fff;" id="ed-save">Сохранить</button>
+        <button class="btn btn-ghost btn-small" id="ed-cancel">Отмена</button>
+      </div>
+      <p class="form-msg" id="ed-msg"></p>
     </div>`;
 }
 
@@ -578,9 +570,7 @@ function formatDate(iso){
 /* ---------------------------- boot ---------------------------- */
 (async function boot(){
   const { data } = await sb.auth.getSession();
-  if(data.session){
-    await onLoggedIn(data.session);
-  }
+  if(data.session){ await onLoggedIn(data.session); }
 })();
 </script>
 </body>
