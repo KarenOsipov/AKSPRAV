@@ -37,6 +37,11 @@
   @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
   .hidden{ display:none !important; }
 
+  /* ---------- LOGO (векторный, всегда чёткий) ---------- */
+  .logo-mark svg{ display:block; }
+  .logo-wrap .logo-mark svg{ height:76px; width:auto; }
+  .sidebar-logo .logo-mark svg{ height:54px; width:auto; }
+
   /* ---------- LOGIN ---------- */
   #login-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding: 24px; background: var(--bg); }
   .login-card{
@@ -47,7 +52,6 @@
   }
   @keyframes cardIn{ 0%{ opacity:0; transform: translateY(8px) scale(.98); } 100%{ opacity:1; transform:none; } }
   .logo-wrap{ display:flex; justify-content:center; margin-bottom: 20px; }
-  .logo-wrap img{ height: 72px; width:auto; object-fit:contain; }
   .brand-sub{ color: var(--ink-soft); font-size: 13px; text-align:center; margin: 0 0 28px; }
   .field{ margin-bottom: 16px; }
   .field label{ display:block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; font-weight:500; }
@@ -68,8 +72,7 @@
   /* ---------- APP SHELL ---------- */
   #app-screen{ display:flex; min-height:100vh; }
   .sidebar{ width: 264px; flex-shrink:0; background: var(--navy); display:flex; flex-direction:column; padding: 20px 18px; }
-  .sidebar-logo{ background:#fff; border-radius: var(--radius); padding: 18px 16px; display:flex; justify-content:center; margin-bottom: 22px; }
-  .sidebar-logo img{ height: 52px; width:auto; object-fit:contain; }
+  .sidebar-logo{ background:#fff; border-radius: var(--radius); padding: 16px; display:flex; justify-content:center; margin-bottom: 22px; }
   .nav-list{ list-style:none; margin:0 0 8px; padding:0; flex:1; overflow-y:auto; }
   .nav-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -92,7 +95,7 @@
   .sidebar-foot .btn-ghost{ width:100%; color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.2); }
   .sidebar-foot .btn-ghost:hover{ background: var(--navy-light); color:#fff; }
 
-  .main{ flex:1; min-width:0; padding: 28px 36px 60px; max-width: 960px; margin:0 auto; width:100%; }
+  .main{ flex:1; min-width:0; padding: 28px 36px 60px; max-width: 1040px; margin:0 auto; width:100%; }
   .topbar{ display:flex; gap:14px; align-items:center; margin-bottom: 22px; flex-wrap:wrap; }
   .search-wrap{ position:relative; flex:1; min-width:220px; }
   .search-wrap input{ width:100%; padding: 12px 16px; border:1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
@@ -106,6 +109,20 @@
 
   .section-title{ font-size: 22px; margin: 0 0 4px; }
   .section-hint{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; }
+
+  /* ---------- ГЛАВНЫЙ ЭКРАН: онбординг + карточки разделов ---------- */
+  .intro-panel{ margin-bottom: 20px; }
+  .intro-panel .section-hint{ max-width: 62ch; margin-bottom: 22px; }
+  .steps-row{ display:flex; gap:22px; flex-wrap:wrap; }
+  .step-item{ display:flex; gap:12px; align-items:flex-start; flex:1; min-width:200px; }
+  .step-num{ width:26px; height:26px; border-radius:50%; background: var(--bg); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px; color: var(--navy); flex-shrink:0; }
+  .step-text{ font-size:13.5px; color: var(--ink-soft); padding-top:3px; }
+  .cat-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap:14px; }
+  .cat-card{ background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; cursor:pointer; transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+  .cat-card:hover{ border-color: var(--navy-lighter); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(35,36,91,0.09); }
+  .cat-badge{ width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; margin-bottom:14px; font-family:'Manrope',sans-serif; font-size:15px; }
+  .cat-card-name{ font-weight:700; margin-bottom:4px; }
+  .cat-card-count{ font-size:12.5px; color: var(--ink-soft); }
 
   .article-row{
     display:flex; justify-content:space-between; align-items:center; gap:14px;
@@ -159,9 +176,7 @@
 <!-- ============== ЭКРАН ВХОДА ============== -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="logo-wrap">
-      <img src="agrokurs-logo.png" alt="Агро Курс" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'brand',textContent:'АГРО КУРС',style:'font-size:22px;color:var(--navy)'}))">
-    </div>
+    <div class="logo-wrap"><div class="logo-mark" id="logo-login"></div></div>
     <p class="brand-sub">Справочник для сотрудников</p>
     <div class="field">
       <label for="login-email">Рабочая почта</label>
@@ -179,9 +194,7 @@
 <!-- ============== ОСНОВНОЕ ПРИЛОЖЕНИЕ ============== -->
 <div id="app-screen" class="hidden">
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <img src="agrokurs-logo.png" alt="Агро Курс" onerror="this.parentElement.remove()">
-    </div>
+    <div class="sidebar-logo"><div class="logo-mark" id="logo-sidebar"></div></div>
     <ul class="nav-list" id="nav-list"></ul>
     <div class="sidebar-foot">
       <div class="who" id="who-am-i"></div>
@@ -211,6 +224,21 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const MEDIA_BUCKET = "media";
 
+/* ---------------------------- логотип: чистый SVG, не размывается ---------------------------- */
+const LOGO_SVG = `
+<svg viewBox="0 0 220 138" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(110,46)">
+    ${[0,45,90,135,180,225,270,315].map(a => `<rect x="-4" y="-33" width="8" height="13" rx="2" fill="#23245B" transform="rotate(${a})"/>`).join("")}
+    <circle r="24" fill="none" stroke="#23245B" stroke-width="6"/>
+    <line x1="-24" y1="16" x2="22" y2="-30" stroke="#C81225" stroke-width="7" stroke-linecap="round"/>
+    <polygon points="22,-30 6,-27 13,-14" fill="#C81225"/>
+    <circle r="4.5" fill="#C81225"/>
+  </g>
+  <text x="110" y="118" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="25" letter-spacing="1" fill="#23245B">АГРО КУРС</text>
+</svg>`;
+document.getElementById("logo-login").innerHTML = LOGO_SVG;
+document.getElementById("logo-sidebar").innerHTML = LOGO_SVG;
+
 /* ---------------------------- state ---------------------------- */
 const state = {
   session: null,
@@ -220,7 +248,7 @@ const state = {
   activeCategoryId: null,
   activeArticleId: null,
   searchQuery: "",
-  editing: null,       // { data:{...}, pendingImageFile, pendingAudioBlob, removeImage, removeAudio }
+  editing: null,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -287,7 +315,6 @@ async function getSignedUrl(path){
   if(error){ console.error(error); return null; }
   return data.signedUrl;
 }
-// Находит элементы с data-media-path и подставляет им реальный (временный) адрес файла.
 async function hydrateMedia(root){
   const els = root.querySelectorAll("[data-media-path]");
   for(const el of els){
@@ -365,6 +392,14 @@ $("#add-article-btn").addEventListener("click", () => {
   render();
 });
 
+function pluralArticles(n){
+  const mod10 = n % 10, mod100 = n % 100;
+  if(mod100 >= 11 && mod100 <= 14) return "статей";
+  if(mod10 === 1) return "статья";
+  if(mod10 >= 2 && mod10 <= 4) return "статьи";
+  return "статей";
+}
+
 function render(){
   renderSidebar();
   const view = $("#main-view");
@@ -376,8 +411,6 @@ function render(){
     return;
   }
 
-  // Открытая статья показывается всегда в первую очередь -- даже если
-  // в строке поиска остался текст (иначе статья "пряталась" за списком).
   if(state.activeArticleId){
     const a = state.articles.find(x => x.id === state.activeArticleId);
     if(!a){ state.activeArticleId = null; return render(); }
@@ -454,11 +487,40 @@ function render(){
     return;
   }
 
-  view.innerHTML = `
-    <div class="panel">
-      <h2 class="section-title">Выберите раздел слева или воспользуйтесь поиском</h2>
-      <p class="section-hint">Всего статей в справочнике: ${state.articles.length}</p>
+  // ---------- Главный экран: онбординг + карточки разделов ----------
+  const stepsHtml = `
+    <div class="steps-row">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text">Ищите через строку поиска сверху — по названию, тексту статьи или тегам.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text">Или открывайте нужный раздел — слева в меню или в карточках ниже.</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text">Не нашли ответ — обратитесь к администратору справочника.</div></div>
     </div>`;
+
+  const cardsHtml = state.categories.length ? `
+    <div class="cat-grid">
+      ${state.categories.map((cat, i) => {
+        const count = state.articles.filter(a => a.category_id === cat.id).length;
+        const letter = (cat.name.trim()[0] || "?").toUpperCase();
+        const bg = i % 2 === 0 ? "var(--navy)" : "var(--red)";
+        return `
+          <div class="cat-card" data-cat="${cat.id}">
+            <div class="cat-badge" style="background:${bg};">${escapeHtml(letter)}</div>
+            <div class="cat-card-name">${escapeHtml(cat.name)}</div>
+            <div class="cat-card-count">${count} ${pluralArticles(count)}</div>
+          </div>`;
+      }).join("")}
+    </div>` : `<div class="panel"><p class="section-hint" style="margin:0;">Разделов пока нет${isAdmin ? " — добавьте первый раздел внизу левой панели." : "."}</p></div>`;
+
+  view.innerHTML = `
+    <div class="panel intro-panel">
+      <h2 class="section-title">Добро пожаловать в справочник АГРО КУРС</h2>
+      <p class="section-hint">Здесь собраны правила, инструкции и контакты компании — чтобы быстро понять, что делать, как сделать это правильно и к кому обратиться, если что-то непонятно.</p>
+      ${stepsHtml}
+    </div>
+    ${cardsHtml}`;
+
+  document.querySelectorAll(".cat-card").forEach(el => {
+    el.addEventListener("click", () => { state.activeCategoryId = el.dataset.cat; render(); });
+  });
 }
 
 function articleRowHtml(a, isAdmin){
@@ -571,7 +633,6 @@ async function attachEditorHandlers(){
   const editing = state.editing;
   const d = editing.data;
 
-  // существующее фото/аудио -- показать превью по подписанной ссылке
   if(d.image_path){
     const url = await getSignedUrl(d.image_path);
     if(url){ $("#ed-image-preview").src = url; $("#ed-image-preview").classList.remove("hidden"); $("#ed-image-remove").classList.remove("hidden"); }
