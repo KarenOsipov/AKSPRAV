@@ -37,10 +37,9 @@
   @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
   .hidden{ display:none !important; }
 
-  /* ---------- LOGO (векторный, всегда чёткий) ---------- */
-  .logo-mark svg{ display:block; }
-  .logo-wrap .logo-mark svg{ height:76px; width:auto; }
-  .sidebar-logo .logo-mark svg{ height:54px; width:auto; }
+  /* ---------- LOGO ---------- */
+  .logo-wrap img{ height:74px; width:auto; object-fit:contain; display:block; }
+  .sidebar-logo img{ height:56px; width:auto; object-fit:contain; display:block; }
 
   /* ---------- LOGIN ---------- */
   #login-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding: 24px; background: var(--bg); }
@@ -176,7 +175,9 @@
 <!-- ============== ЭКРАН ВХОДА ============== -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="logo-wrap"><div class="logo-mark" id="logo-login"></div></div>
+    <div class="logo-wrap">
+      <img src="agrokurs-logo.png" alt="Агро Курс" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'brand',textContent:'АГРО КУРС',style:'font-size:22px;color:var(--navy)'}))">
+    </div>
     <p class="brand-sub">Справочник для сотрудников</p>
     <div class="field">
       <label for="login-email">Рабочая почта</label>
@@ -194,7 +195,9 @@
 <!-- ============== ОСНОВНОЕ ПРИЛОЖЕНИЕ ============== -->
 <div id="app-screen" class="hidden">
   <aside class="sidebar">
-    <div class="sidebar-logo"><div class="logo-mark" id="logo-sidebar"></div></div>
+    <div class="sidebar-logo">
+      <img src="agrokurs-logo.png" alt="Агро Курс" onerror="this.parentElement.remove()">
+    </div>
     <ul class="nav-list" id="nav-list"></ul>
     <div class="sidebar-foot">
       <div class="who" id="who-am-i"></div>
@@ -223,21 +226,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const MEDIA_BUCKET = "media";
-
-/* ---------------------------- логотип: чистый SVG, не размывается ---------------------------- */
-const LOGO_SVG = `
-<svg viewBox="0 0 220 138" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(110,46)">
-    ${[0,45,90,135,180,225,270,315].map(a => `<rect x="-4" y="-33" width="8" height="13" rx="2" fill="#23245B" transform="rotate(${a})"/>`).join("")}
-    <circle r="24" fill="none" stroke="#23245B" stroke-width="6"/>
-    <line x1="-24" y1="16" x2="22" y2="-30" stroke="#C81225" stroke-width="7" stroke-linecap="round"/>
-    <polygon points="22,-30 6,-27 13,-14" fill="#C81225"/>
-    <circle r="4.5" fill="#C81225"/>
-  </g>
-  <text x="110" y="118" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="25" letter-spacing="1" fill="#23245B">АГРО КУРС</text>
-</svg>`;
-document.getElementById("logo-login").innerHTML = LOGO_SVG;
-document.getElementById("logo-sidebar").innerHTML = LOGO_SVG;
 
 /* ---------------------------- state ---------------------------- */
 const state = {
