@@ -24,15 +24,12 @@
     --radius: 12px;
     --radius-sm: 8px;
   }
-  *{ box-sizing: border-box; }
+  *{ box-sizing: border-box; min-width:0; }
   html,body{ height:100%; }
   body{
-    margin:0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.55;
+    margin:0; background: var(--bg); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6;
+    overflow-wrap: anywhere;
   }
   h1,h2,h3, .brand{ font-family: 'Manrope', system-ui, sans-serif; font-weight: 700; }
   button, input, textarea, select{ font-family: inherit; font-size: inherit; color: inherit; }
@@ -41,28 +38,23 @@
   .hidden{ display:none !important; }
 
   /* ---------- LOGIN ---------- */
-  #login-screen{
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
-    padding: 24px; background: var(--bg);
-  }
+  #login-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding: 24px; background: var(--bg); }
   .login-card{
     width:100%; max-width: 380px; background: var(--surface);
     border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 36px 32px 32px; box-shadow: 0 1px 2px rgba(27,30,42,0.04);
+    padding: 34px 32px 32px; box-shadow: 0 8px 28px rgba(35,36,91,0.08);
     animation: cardIn .45s cubic-bezier(.2,.8,.3,1.1) both;
   }
   @keyframes cardIn{ 0%{ opacity:0; transform: translateY(8px) scale(.98); } 100%{ opacity:1; transform:none; } }
-  .logo-wrap{ display:flex; justify-content:center; margin-bottom: 22px; }
-  .logo-wrap img{ height: 64px; width:auto; }
+  .logo-wrap{ display:flex; justify-content:center; margin-bottom: 20px; }
+  .logo-wrap img{ height: 72px; width:auto; object-fit:contain; }
   .brand-sub{ color: var(--ink-soft); font-size: 13px; text-align:center; margin: 0 0 28px; }
   .field{ margin-bottom: 16px; }
   .field label{ display:block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; font-weight:500; }
-  .field input{
-    width:100%; padding: 11px 13px; border: 1px solid var(--line);
-    background: var(--surface); border-radius: var(--radius-sm); outline: none;
-  }
+  .field input{ width:100%; padding: 11px 13px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius-sm); outline: none; }
   .field input:focus{ border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,18,37,0.12); }
-  .btn{ border:none; cursor:pointer; border-radius: var(--radius-sm); padding: 11px 18px; font-size: 14.5px; font-weight: 600; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+  .btn{ border:none; cursor:pointer; border-radius: var(--radius-sm); padding: 11px 18px; font-size: 14.5px; font-weight: 600; transition: background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease; }
+  .btn:active{ transform: scale(.98); }
   .btn:focus-visible{ outline: 2px solid var(--navy); outline-offset: 2px; }
   .btn-primary{ background: var(--red); color:#fff; width:100%; }
   .btn-primary:hover{ background: var(--red-deep); }
@@ -75,15 +67,9 @@
 
   /* ---------- APP SHELL ---------- */
   #app-screen{ display:flex; min-height:100vh; }
-  .sidebar{
-    width: 264px; flex-shrink:0; background: var(--navy);
-    display:flex; flex-direction:column; padding: 20px 18px;
-  }
-  .sidebar-logo{
-    background:#fff; border-radius: var(--radius); padding: 14px 10px;
-    display:flex; justify-content:center; margin-bottom: 22px;
-  }
-  .sidebar-logo img{ height: 46px; width:auto; }
+  .sidebar{ width: 264px; flex-shrink:0; background: var(--navy); display:flex; flex-direction:column; padding: 20px 18px; }
+  .sidebar-logo{ background:#fff; border-radius: var(--radius); padding: 18px 16px; display:flex; justify-content:center; margin-bottom: 22px; }
+  .sidebar-logo img{ height: 52px; width:auto; object-fit:contain; }
   .nav-list{ list-style:none; margin:0 0 8px; padding:0; flex:1; overflow-y:auto; }
   .nav-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -93,34 +79,26 @@
   }
   .nav-item:hover{ background: var(--navy-light); color:#fff; }
   .nav-item.active{ background: var(--navy-light); color:#fff; border-left-color: var(--red); font-weight:600; }
-  .nav-item .count{ font-size:12px; color: rgba(255,255,255,0.5); }
-  .nav-item .del-cat{ opacity:0; font-size:12px; color:#F5A3AB; background:none; border:none; cursor:pointer; padding:2px 4px; }
+  .nav-item span:first-child{ overflow-wrap: anywhere; }
+  .nav-item .count{ font-size:12px; color: rgba(255,255,255,0.5); flex-shrink:0; }
+  .nav-item .del-cat{ opacity:0; font-size:12px; color:#F5A3AB; background:none; border:none; cursor:pointer; padding:2px 4px; flex-shrink:0; }
   .nav-item:hover .del-cat{ opacity:1; }
   .sidebar-foot{ border-top: 1px solid rgba(255,255,255,0.12); padding-top:14px; }
-  .who{ font-size:12.5px; color: rgba(255,255,255,0.55); margin-bottom:10px; word-break:break-all; }
+  .who{ font-size:12.5px; color: rgba(255,255,255,0.55); margin-bottom:10px; }
   .add-cat-row{ display:flex; gap:6px; margin-bottom:10px; }
-  .add-cat-row input{
-    flex:1; padding:8px 10px; border:1px solid rgba(255,255,255,0.2); border-radius: var(--radius-sm);
-    background: var(--navy-light); color:#fff;
-  }
+  .add-cat-row input{ flex:1; min-width:0; padding:8px 10px; border:1px solid rgba(255,255,255,0.2); border-radius: var(--radius-sm); background: var(--navy-light); color:#fff; }
   .add-cat-row input::placeholder{ color: rgba(255,255,255,0.45); }
-  .add-cat-row .btn{ background: var(--red); color:#fff; }
+  .add-cat-row .btn{ background: var(--red); color:#fff; flex-shrink:0; }
   .sidebar-foot .btn-ghost{ width:100%; color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.2); }
   .sidebar-foot .btn-ghost:hover{ background: var(--navy-light); color:#fff; }
 
   .main{ flex:1; min-width:0; padding: 28px 36px 60px; max-width: 960px; margin:0 auto; width:100%; }
-  .topbar{ display:flex; gap:14px; align-items:center; margin-bottom: 22px; }
-  .search-wrap{ position:relative; flex:1; }
-  .search-wrap input{
-    width:100%; padding: 12px 16px; border:1px solid var(--line);
-    border-radius: var(--radius); background: var(--surface);
-  }
+  .topbar{ display:flex; gap:14px; align-items:center; margin-bottom: 22px; flex-wrap:wrap; }
+  .search-wrap{ position:relative; flex:1; min-width:220px; }
+  .search-wrap input{ width:100%; padding: 12px 16px; border:1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
   .search-wrap input:focus{ outline:none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,18,37,0.1); }
 
-  .panel{
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 26px 28px; animation: fadeIn .25s ease both;
-  }
+  .panel{ background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 28px; animation: fadeIn .25s ease both; }
   @keyframes fadeIn{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none; } }
 
   .crumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 10px; cursor:pointer; display:inline-block; }
@@ -130,41 +108,44 @@
   .section-hint{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; }
 
   .article-row{
-    display:flex; justify-content:space-between; align-items:center; gap:12px;
-    padding: 15px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
-    cursor:pointer; margin-bottom: 10px; transition: border-color .12s ease, background .12s ease;
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    cursor:pointer; margin-bottom: 10px; transition: border-color .15s ease, background .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .article-row:hover{ border-color: var(--navy-lighter); background: var(--bg); }
+  .article-row:hover{ border-color: var(--navy-lighter); background: var(--bg); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(35,36,91,0.06); }
   .article-row:hover .art-title{ color: var(--red); }
+  .art-row-left{ display:flex; align-items:center; gap:12px; min-width:0; }
+  .art-thumb{ width:44px; height:44px; border-radius: 8px; object-fit:cover; flex-shrink:0; background: var(--bg); border:1px solid var(--line); }
   .art-title{ font-weight:600; transition: color .12s ease; }
   .art-meta{ font-size:12.5px; color: var(--ink-soft); margin-top:3px; }
   .art-actions{ display:flex; gap:6px; flex-shrink:0; }
-  .icon-btn{
-    background:none; border:1px solid var(--line); border-radius: var(--radius-sm);
-    width:30px; height:30px; cursor:pointer; color: var(--ink-soft); font-size:14px;
-  }
+  .icon-btn{ background:none; border:1px solid var(--line); border-radius: var(--radius-sm); width:30px; height:30px; cursor:pointer; color: var(--ink-soft); font-size:14px; flex-shrink:0; }
   .icon-btn:hover{ background: var(--bg); color: var(--ink); }
   .icon-btn.danger:hover{ color: var(--red); border-color: var(--red); }
 
-  .article-detail h2{ font-size: 25px; margin: 4px 0 6px; }
-  .article-detail .art-meta{ margin-bottom: 18px; }
-  .article-body{ white-space: pre-wrap; font-size: 15.5px; max-width: 68ch; }
-  .tag-pill{
-    display:inline-block; font-size:12px; color: var(--navy); background: var(--bg);
-    border:1px solid var(--line); padding:3px 10px; border-radius: 20px; margin: 0 6px 6px 0; font-weight:500;
-  }
+  .article-cover{ width:100%; max-height: 340px; object-fit:cover; border-radius: var(--radius); margin-bottom:22px; display:block; }
+  .article-detail h2{ font-size: 27px; margin: 4px 0 6px; line-height:1.25; }
+  .article-detail .art-meta{ margin-bottom: 16px; }
+  .article-audio{ width:100%; margin: 4px 0 20px; }
+  .article-body{ white-space: pre-wrap; font-size: 16px; max-width: 68ch; color:#282B39; }
+  .tag-pill{ display:inline-block; font-size:12px; color: var(--navy); background: var(--bg); border:1px solid var(--line); padding:3px 10px; border-radius: 20px; margin: 0 6px 6px 0; font-weight:500; }
 
   .empty-state{ padding: 20px 0; color: var(--ink-soft); }
   .empty-state p{ margin: 0 0 14px; }
 
   .editor .field label{ font-weight:500; }
-  .editor textarea{
-    width:100%; min-height:220px; padding:12px 13px; border:1px solid var(--line);
-    border-radius: var(--radius-sm); resize:vertical; background: var(--surface);
-  }
+  .editor textarea{ width:100%; min-height:220px; padding:12px 13px; border:1px solid var(--line); border-radius: var(--radius-sm); resize:vertical; background: var(--surface); }
   .editor textarea:focus, .editor select:focus{ outline:none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(200,18,37,0.1); }
   .editor select{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius: var(--radius-sm); background:var(--surface); }
-  .editor-actions{ display:flex; gap:10px; margin-top:18px; }
+  .editor-actions{ display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+  .media-field{ border:1px dashed var(--line); border-radius: var(--radius-sm); padding: 14px; }
+  .media-field + .media-field{ margin-top:14px; }
+  .media-preview-img{ max-width:200px; max-height:140px; border-radius:8px; display:block; margin-top:10px; object-fit:cover; }
+  .media-preview-audio{ width:100%; margin-top:10px; }
+  .rec-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; background: var(--red); margin-right:6px; animation: pulse 1s ease infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:.3; } }
+  .file-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .file-row input[type=file]{ font-size:13px; max-width:100%; }
 
   @media (max-width: 780px){
     #app-screen{ flex-direction:column; }
@@ -228,6 +209,7 @@ const SUPABASE_URL = "https://iateslqjjrdzkcifvfje.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhdGVzbHFqanJkemtjaWZ2ZmplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxNjUxOTIsImV4cCI6MjEwMzc0MTE5Mn0.b4dy8NH4--AmHr95IkDXhdiGyU-pjd8PYOtE2EZyzBw";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const MEDIA_BUCKET = "media";
 
 /* ---------------------------- state ---------------------------- */
 const state = {
@@ -238,7 +220,7 @@ const state = {
   activeCategoryId: null,
   activeArticleId: null,
   searchQuery: "",
-  editing: null,
+  editing: null,       // { data:{...}, pendingImageFile, pendingAudioBlob, removeImage, removeAudio }
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -254,9 +236,7 @@ async function doLogin(){
   const password = $("#login-pass").value;
   const msg = $("#login-msg");
   msg.textContent = ""; msg.className = "form-msg";
-  if(!email || !password){
-    msg.textContent = "Введите почту и пароль."; msg.classList.add("error"); return;
-  }
+  if(!email || !password){ msg.textContent = "Введите почту и пароль."; msg.classList.add("error"); return; }
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if(error){
     msg.textContent = "Неверная почта или пароль. Проверьте данные и попробуйте снова.";
@@ -266,10 +246,7 @@ async function doLogin(){
   await onLoggedIn(data.session);
 }
 
-$("#logout-btn").addEventListener("click", async () => {
-  await sb.auth.signOut();
-  location.reload();
-});
+$("#logout-btn").addEventListener("click", async () => { await sb.auth.signOut(); location.reload(); });
 
 async function onLoggedIn(session){
   state.session = session;
@@ -297,6 +274,32 @@ async function loadData(){
   render();
 }
 
+/* ---------------------------- media helpers ---------------------------- */
+async function uploadMedia(fileOrBlob, folder, ext){
+  const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await sb.storage.from(MEDIA_BUCKET).upload(path, fileOrBlob, { upsert: false });
+  if(error) throw error;
+  return path;
+}
+async function getSignedUrl(path){
+  if(!path) return null;
+  const { data, error } = await sb.storage.from(MEDIA_BUCKET).createSignedUrl(path, 3600);
+  if(error){ console.error(error); return null; }
+  return data.signedUrl;
+}
+// Находит элементы с data-media-path и подставляет им реальный (временный) адрес файла.
+async function hydrateMedia(root){
+  const els = root.querySelectorAll("[data-media-path]");
+  for(const el of els){
+    const path = el.dataset.mediaPath;
+    const url = await getSignedUrl(path);
+    if(!url) continue;
+    if(el.tagName === "IMG") el.src = url;
+    if(el.tagName === "AUDIO") el.src = url;
+    el.removeAttribute("data-media-path");
+  }
+}
+
 /* ---------------------------- render: sidebar ---------------------------- */
 function renderAddCategoryZone(){
   const zone = $("#add-cat-zone");
@@ -322,7 +325,7 @@ function renderSidebar(){
     return `
       <li class="nav-item ${active ? "active" : ""}" data-cat="${cat.id}">
         <span>${escapeHtml(cat.name)}</span>
-        <span style="display:flex; align-items:center; gap:6px;">
+        <span style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
           <span class="count">${count}</span>
           ${isAdmin ? `<button class="del-cat" data-delcat="${cat.id}" title="Удалить раздел">✕</button>` : ""}
         </span>
@@ -357,7 +360,7 @@ $("#search-input").addEventListener("input", (e) => {
 });
 
 $("#add-article-btn").addEventListener("click", () => {
-  state.editing = { type: "article", data: { title:"", content:"", tags:"", category_id: state.activeCategoryId || (state.categories[0] && state.categories[0].id) || "" } };
+  state.editing = { data: { title:"", content:"", tags:"", category_id: state.activeCategoryId || (state.categories[0] && state.categories[0].id) || "" } };
   state.activeArticleId = null;
   render();
 });
@@ -367,14 +370,14 @@ function render(){
   const view = $("#main-view");
   const isAdmin = state.profile && state.profile.role === "admin";
 
-  // Порядок проверок важен: открытая статья должна показываться
-  // даже если в строке поиска остался текст (это и был баг).
   if(state.editing){
     view.innerHTML = `<div class="panel">${renderEditor(state.editing, isAdmin)}</div>`;
     attachEditorHandlers();
     return;
   }
 
+  // Открытая статья показывается всегда в первую очередь -- даже если
+  // в строке поиска остался текст (иначе статья "пряталась" за списком).
   if(state.activeArticleId){
     const a = state.articles.find(x => x.id === state.activeArticleId);
     if(!a){ state.activeArticleId = null; return render(); }
@@ -383,9 +386,11 @@ function render(){
     view.innerHTML = `
       <div class="panel article-detail">
         <div class="crumb" id="back-to-cat">← ${escapeHtml(backLabel)}</div>
+        ${a.image_path ? `<img class="article-cover" data-media-path="${a.image_path}" alt="">` : ""}
         <h2>${escapeHtml(a.title)}</h2>
         <div class="art-meta">Обновлено ${formatDate(a.updated_at || a.created_at)}</div>
         <div>${(a.tags||[]).map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("")}</div>
+        ${a.audio_path ? `<audio class="article-audio" controls data-media-path="${a.audio_path}"></audio>` : ""}
         <div class="article-body">${escapeHtml(a.content)}</div>
         ${isAdmin ? `
           <div class="editor-actions">
@@ -393,10 +398,11 @@ function render(){
             <button class="btn btn-ghost btn-small" id="delete-this" style="color:var(--red); border-color:var(--red);">Удалить</button>
           </div>` : ""}
       </div>`;
+    hydrateMedia(view);
     $("#back-to-cat").addEventListener("click", () => { state.activeArticleId = null; render(); });
     if(isAdmin){
       $("#edit-this").addEventListener("click", () => {
-        state.editing = { type:"article", data: { ...a, tags: (a.tags||[]).join(", ") } };
+        state.editing = { data: { ...a, tags: (a.tags||[]).join(", ") } };
         render();
       });
       $("#delete-this").addEventListener("click", async () => {
@@ -424,6 +430,7 @@ function render(){
           `<div class="empty-state"><p>Ничего не найдено. Попробуйте другое слово или посмотрите разделы в списке слева.</p></div>`}
       </div>`;
     attachRowHandlers();
+    hydrateMedia(view);
     return;
   }
 
@@ -440,6 +447,7 @@ function render(){
           </div>`}
       </div>`;
     attachRowHandlers();
+    hydrateMedia(view);
     if(isAdmin && !list.length){
       $("#add-first")?.addEventListener("click", () => $("#add-article-btn").click());
     }
@@ -457,9 +465,12 @@ function articleRowHtml(a, isAdmin){
   const cat = state.categories.find(c => c.id === a.category_id);
   return `
     <div class="article-row" data-open="${a.id}">
-      <div>
-        <div class="art-title">${escapeHtml(a.title)}</div>
-        <div class="art-meta">${cat ? escapeHtml(cat.name) + " · " : ""}${formatDate(a.updated_at || a.created_at)}</div>
+      <div class="art-row-left">
+        ${a.image_path ? `<img class="art-thumb" data-media-path="${a.image_path}" alt="">` : ""}
+        <div>
+          <div class="art-title">${escapeHtml(a.title)}</div>
+          <div class="art-meta">${cat ? escapeHtml(cat.name) + " · " : ""}${formatDate(a.updated_at || a.created_at)}${a.audio_path ? " · 🎤 голосовое" : ""}</div>
+        </div>
       </div>
       ${isAdmin ? `
         <div class="art-actions">
@@ -481,7 +492,7 @@ function attachRowHandlers(){
     el.addEventListener("click", (e) => {
       e.stopPropagation();
       const a = state.articles.find(x => x.id === el.dataset.edit);
-      state.editing = { type:"article", data: { ...a, tags: (a.tags||[]).join(", ") } };
+      state.editing = { data: { ...a, tags: (a.tags||[]).join(", ") } };
       render();
     });
   });
@@ -496,6 +507,8 @@ function attachRowHandlers(){
 }
 
 /* ---------------------------- editor ---------------------------- */
+let mediaRecorder = null, recordedChunks = [];
+
 function renderEditor(editing, isAdmin){
   if(!isAdmin) return "";
   const d = editing.data;
@@ -521,6 +534,31 @@ function renderEditor(editing, isAdmin){
         <label>Текст статьи</label>
         <textarea id="ed-content" placeholder="Подробное описание, шаги, контакты…">${escapeHtml(d.content||"")}</textarea>
       </div>
+
+      <div class="media-field">
+        <label style="font-weight:500; display:block; margin-bottom:8px;">Фото к статье (необязательно)</label>
+        <div class="file-row">
+          <input type="file" id="ed-image-file" accept="image/*">
+          <button type="button" class="btn btn-ghost btn-small hidden" id="ed-image-remove">Убрать фото</button>
+        </div>
+        <img id="ed-image-preview" class="media-preview-img hidden" alt="">
+      </div>
+
+      <div class="media-field">
+        <label style="font-weight:500; display:block; margin-bottom:8px;">Голосовое сообщение (необязательно)</label>
+        <div class="file-row">
+          <button type="button" class="btn btn-ghost btn-small" id="rec-start">● Записать с микрофона</button>
+          <button type="button" class="btn btn-ghost btn-small hidden" id="rec-stop">Остановить запись</button>
+          <span id="rec-status" style="font-size:13px; color:var(--ink-soft);"></span>
+        </div>
+        <div class="file-row" style="margin-top:10px;">
+          <span style="font-size:13px; color:var(--ink-soft);">или загрузить файл:</span>
+          <input type="file" id="ed-audio-file" accept="audio/*">
+          <button type="button" class="btn btn-ghost btn-small hidden" id="ed-audio-remove">Убрать запись</button>
+        </div>
+        <audio id="ed-audio-preview" class="media-preview-audio hidden" controls></audio>
+      </div>
+
       <div class="editor-actions">
         <button class="btn" style="background:var(--red); color:#fff;" id="ed-save">Сохранить</button>
         <button class="btn btn-ghost btn-small" id="ed-cancel">Отмена</button>
@@ -529,8 +567,86 @@ function renderEditor(editing, isAdmin){
     </div>`;
 }
 
-function attachEditorHandlers(){
+async function attachEditorHandlers(){
+  const editing = state.editing;
+  const d = editing.data;
+
+  // существующее фото/аудио -- показать превью по подписанной ссылке
+  if(d.image_path){
+    const url = await getSignedUrl(d.image_path);
+    if(url){ $("#ed-image-preview").src = url; $("#ed-image-preview").classList.remove("hidden"); $("#ed-image-remove").classList.remove("hidden"); }
+  }
+  if(d.audio_path){
+    const url = await getSignedUrl(d.audio_path);
+    if(url){ $("#ed-audio-preview").src = url; $("#ed-audio-preview").classList.remove("hidden"); $("#ed-audio-remove").classList.remove("hidden"); }
+  }
+
   $("#ed-cancel").addEventListener("click", () => { state.editing = null; render(); });
+
+  $("#ed-image-file").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    editing.pendingImageFile = file;
+    editing.removeImage = false;
+    const url = URL.createObjectURL(file);
+    $("#ed-image-preview").src = url;
+    $("#ed-image-preview").classList.remove("hidden");
+    $("#ed-image-remove").classList.remove("hidden");
+  });
+  $("#ed-image-remove").addEventListener("click", () => {
+    editing.pendingImageFile = null; editing.removeImage = true;
+    $("#ed-image-file").value = "";
+    $("#ed-image-preview").classList.add("hidden");
+    $("#ed-image-remove").classList.add("hidden");
+  });
+
+  $("#ed-audio-file").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    editing.pendingAudioBlob = file;
+    editing.removeAudio = false;
+    const url = URL.createObjectURL(file);
+    $("#ed-audio-preview").src = url;
+    $("#ed-audio-preview").classList.remove("hidden");
+    $("#ed-audio-remove").classList.remove("hidden");
+  });
+  $("#ed-audio-remove").addEventListener("click", () => {
+    editing.pendingAudioBlob = null; editing.removeAudio = true;
+    $("#ed-audio-file").value = "";
+    $("#ed-audio-preview").classList.add("hidden");
+    $("#ed-audio-remove").classList.add("hidden");
+  });
+
+  $("#rec-start").addEventListener("click", async () => {
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: "audio/webm" });
+        editing.pendingAudioBlob = blob; editing.removeAudio = false;
+        const url = URL.createObjectURL(blob);
+        $("#ed-audio-preview").src = url;
+        $("#ed-audio-preview").classList.remove("hidden");
+        $("#ed-audio-remove").classList.remove("hidden");
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      $("#rec-start").classList.add("hidden");
+      $("#rec-stop").classList.remove("hidden");
+      $("#rec-status").innerHTML = `<span class="rec-dot"></span>Идёт запись…`;
+    }catch(err){
+      $("#rec-status").textContent = "Не удалось получить доступ к микрофону: " + err.message;
+    }
+  });
+  $("#rec-stop").addEventListener("click", () => {
+    if(mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+    $("#rec-start").classList.remove("hidden");
+    $("#rec-stop").classList.add("hidden");
+    $("#rec-status").textContent = "Запись готова.";
+  });
+
   $("#ed-save").addEventListener("click", async () => {
     const title = $("#ed-title").value.trim();
     const category_id = $("#ed-cat").value;
@@ -540,19 +656,39 @@ function attachEditorHandlers(){
     if(!title || !content){
       msg.textContent = "Заполните заголовок и текст статьи."; msg.className = "form-msg error"; return;
     }
-    const payload = { title, category_id, tags, content, updated_at: new Date().toISOString() };
-    let error;
-    if(state.editing.data.id){
-      ({ error } = await sb.from("articles").update(payload).eq("id", state.editing.data.id));
-    } else {
-      payload.created_by = state.session.user.id;
-      ({ error } = await sb.from("articles").insert(payload));
+    msg.textContent = "Сохраняем…"; msg.className = "form-msg";
+    $("#ed-save").disabled = true;
+
+    try{
+      const payload = { title, category_id, tags, content, updated_at: new Date().toISOString() };
+
+      if(editing.removeImage) payload.image_path = null;
+      if(editing.pendingImageFile){
+        const ext = (editing.pendingImageFile.name || "photo.jpg").split(".").pop() || "jpg";
+        payload.image_path = await uploadMedia(editing.pendingImageFile, "articles/images", ext);
+      }
+      if(editing.removeAudio) payload.audio_path = null;
+      if(editing.pendingAudioBlob){
+        const isFile = editing.pendingAudioBlob instanceof File;
+        const ext = isFile ? (editing.pendingAudioBlob.name.split(".").pop() || "webm") : "webm";
+        payload.audio_path = await uploadMedia(editing.pendingAudioBlob, "articles/audio", ext);
+      }
+
+      let error;
+      if(d.id){
+        ({ error } = await sb.from("articles").update(payload).eq("id", d.id));
+      } else {
+        payload.created_by = state.session.user.id;
+        ({ error } = await sb.from("articles").insert(payload));
+      }
+      if(error) throw error;
+
+      state.editing = null;
+      await loadData();
+    }catch(err){
+      msg.textContent = "Не удалось сохранить: " + err.message; msg.className = "form-msg error";
+      $("#ed-save").disabled = false;
     }
-    if(error){
-      msg.textContent = "Не удалось сохранить: " + error.message; msg.className = "form-msg error"; return;
-    }
-    state.editing = null;
-    await loadData();
   });
 }
 
