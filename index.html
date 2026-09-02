@@ -140,9 +140,12 @@
   .icon-btn:hover{ background: var(--bg); color: var(--ink); }
   .icon-btn.danger:hover{ color: var(--red); border-color: var(--red); }
 
-  .article-cover{ width:100%; max-height: 340px; object-fit:cover; border-radius: var(--radius); margin-bottom:22px; display:block; }
+  .article-cover{ width:100%; height:auto; border-radius: var(--radius); margin-bottom:22px; display:block; }
   .article-detail h2{ font-size: 27px; margin: 4px 0 6px; line-height:1.25; }
   .article-detail .art-meta{ margin-bottom: 16px; }
+  .article-block{ max-width: 68ch; }
+  .article-block-image{ width:100%; height:auto; border-radius: var(--radius); display:block; }
+  .article-block-caption{ font-size: 13px; color: var(--ink-soft); margin: 8px 0 0; max-width: 68ch; }
   .article-audio{ width:100%; margin: 4px 0 20px; }
   .article-body{ white-space: pre-wrap; font-size: 16px; max-width: 68ch; color:#282B39; }
   .tag-pill{ display:inline-block; font-size:12px; color: var(--navy); background: var(--bg); border:1px solid var(--line); padding:3px 10px; border-radius: 20px; margin: 0 6px 6px 0; font-weight:500; cursor:pointer; transition: background .12s ease, border-color .12s ease; }
@@ -164,6 +167,17 @@
   @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:.3; } }
   .file-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .file-row input[type=file]{ font-size:13px; max-width:100%; }
+
+  .block-item{ border:1px solid var(--line); border-radius: var(--radius-sm); padding: 14px; margin-bottom:12px; }
+  .block-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .block-type-label{ font-size:12px; font-weight:700; color: var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
+  .block-move-btns{ display:flex; gap:4px; }
+  .block-move-btns button{ background:none; border:1px solid var(--line); border-radius:6px; width:26px; height:26px; cursor:pointer; color: var(--ink-soft); font-size:12px; }
+  .block-move-btns button:hover{ background: var(--bg); color: var(--ink); }
+  .block-move-btns button:disabled{ opacity:.35; cursor:default; }
+  .block-remove{ background:none; border:1px solid var(--line); border-radius:6px; width:26px; height:26px; cursor:pointer; color: var(--red); font-size:12px; }
+  .block-item textarea{ width:100%; min-height:110px; padding:10px 12px; border:1px solid var(--line); border-radius: var(--radius-sm); resize:vertical; background:#fff; }
+  .add-block-row{ display:flex; gap:10px; margin: 4px 0 20px; flex-wrap:wrap; }
 
   @media (max-width: 780px){
     #app-screen{ flex-direction:column; height:auto; overflow:visible; }
@@ -396,7 +410,10 @@ $("#search-input").addEventListener("input", (e) => {
 });
 
 $("#add-article-btn").addEventListener("click", () => {
-  state.editing = { data: { title:"", content:"", tags:"", category_id: state.activeCategoryId || (state.categories[0] && state.categories[0].id) || "" } };
+  state.editing = {
+    data: { title:"", content:"", tags:"", category_id: state.activeCategoryId || (state.categories[0] && state.categories[0].id) || "" },
+    blocks: [{ id: crypto.randomUUID(), type:"text", text:"" }]
+  };
   state.activeArticleId = null;
   render();
 });
@@ -407,6 +424,16 @@ function pluralArticles(n){
   if(mod10 === 1) return "статья";
   if(mod10 >= 2 && mod10 <= 4) return "статьи";
   return "статей";
+}
+
+function initialBlocksFor(a){
+  if(a.blocks && a.blocks.length){
+    return a.blocks.map(b => ({ id: crypto.randomUUID(), ...b }));
+  }
+  const blocks = [];
+  if(a.image_path) blocks.push({ id: crypto.randomUUID(), type:"image", path: a.image_path, caption:"" });
+  blocks.push({ id: crypto.randomUUID(), type:"text", text: a.content || "" });
+  return blocks;
 }
 
 function render(){
@@ -426,16 +453,29 @@ function render(){
     const cat = state.categories.find(c => c.id === a.category_id);
     const backLabel = state.searchQuery ? "Результаты поиска" : (cat ? cat.name : "Все статьи");
     history.replaceState(null, "", `#a=${a.id}`);
+
+    const bodyHtml = (a.blocks && a.blocks.length) ? a.blocks.map(b => {
+      if(b.type === "image" && b.path){
+        return `<img class="article-block-image" data-media-path="${b.path}" alt="">`
+          + (b.caption ? `<p class="article-block-caption">${escapeHtml(b.caption)}</p>` : "");
+      }
+      if(b.type === "text" && b.text){
+        return `<div class="article-body article-block">${escapeHtml(b.text)}</div>`;
+      }
+      return "";
+    }).join("") : `
+      ${a.image_path ? `<img class="article-cover" data-media-path="${a.image_path}" alt="">` : ""}
+      <div class="article-body">${escapeHtml(a.content)}</div>`;
+
     view.innerHTML = `
       <div class="panel article-detail">
         <div class="crumb" id="back-to-cat">← ${escapeHtml(backLabel)}</div>
-        ${a.image_path ? `<img class="article-cover" data-media-path="${a.image_path}" alt="">` : ""}
         ${a.is_pinned ? `<span class="pin-badge">📌 Важное</span>` : ""}
         <h2>${escapeHtml(a.title)}</h2>
         <div class="art-meta">Обновлено ${formatDate(a.updated_at || a.created_at)}</div>
         <div>${(a.tags||[]).map(t => `<button type="button" class="tag-pill" data-tag="${escapeAttr(t)}">${escapeHtml(t)}</button>`).join("")}</div>
         ${a.audio_path ? `<audio class="article-audio" controls data-media-path="${a.audio_path}"></audio>` : ""}
-        <div class="article-body">${escapeHtml(a.content)}</div>
+        ${bodyHtml}
         <div class="editor-actions">
           <button class="btn btn-ghost btn-small" id="copy-link">Скопировать ссылку</button>
           <button class="btn btn-ghost btn-small" id="print-article">Печать</button>
@@ -471,7 +511,7 @@ function render(){
     $("#print-article").addEventListener("click", () => window.print());
     if(isAdmin){
       $("#edit-this").addEventListener("click", () => {
-        state.editing = { data: { ...a, tags: (a.tags||[]).join(", ") } };
+        state.editing = { data: { ...a, tags: (a.tags||[]).join(", ") }, blocks: initialBlocksFor(a) };
         render();
       });
       $("#delete-this").addEventListener("click", async () => {
@@ -621,7 +661,7 @@ function attachRowHandlers(){
     el.addEventListener("click", (e) => {
       e.stopPropagation();
       const a = state.articles.find(x => x.id === el.dataset.edit);
-      state.editing = { data: { ...a, tags: (a.tags||[]).join(", ") } };
+      state.editing = { data: { ...a, tags: (a.tags||[]).join(", ") }, blocks: initialBlocksFor(a) };
       render();
     });
   });
@@ -660,8 +700,12 @@ function renderEditor(editing, isAdmin){
         <input id="ed-tags" type="text" value="${escapeAttr(d.tags||"")}" placeholder="топливо, автопарк, снабжение">
       </div>
       <div class="field">
-        <label>Текст статьи</label>
-        <textarea id="ed-content" placeholder="Подробное описание, шаги, контакты…">${escapeHtml(d.content||"")}</textarea>
+        <label>Содержание статьи</label>
+        <div id="blocks-area"></div>
+        <div class="add-block-row">
+          <button type="button" class="btn btn-ghost btn-small" id="add-text-block">+ Добавить текст</button>
+          <button type="button" class="btn btn-ghost btn-small" id="add-image-block">+ Добавить фото</button>
+        </div>
       </div>
 
       <div class="field">
@@ -669,15 +713,6 @@ function renderEditor(editing, isAdmin){
           <input type="checkbox" id="ed-pinned" ${d.is_pinned ? "checked" : ""} style="width:auto;">
           Закрепить как важное (будет показано наверху и на главном экране)
         </label>
-      </div>
-
-      <div class="media-field">
-        <label style="font-weight:500; display:block; margin-bottom:8px;">Фото к статье (необязательно)</label>
-        <div class="file-row">
-          <input type="file" id="ed-image-file" accept="image/*">
-          <button type="button" class="btn btn-ghost btn-small hidden" id="ed-image-remove">Убрать фото</button>
-        </div>
-        <img id="ed-image-preview" class="media-preview-img hidden" alt="">
       </div>
 
       <div class="media-field">
@@ -707,10 +742,6 @@ async function attachEditorHandlers(){
   const editing = state.editing;
   const d = editing.data;
 
-  if(d.image_path){
-    const url = await getSignedUrl(d.image_path);
-    if(url){ $("#ed-image-preview").src = url; $("#ed-image-preview").classList.remove("hidden"); $("#ed-image-remove").classList.remove("hidden"); }
-  }
   if(d.audio_path){
     const url = await getSignedUrl(d.audio_path);
     if(url){ $("#ed-audio-preview").src = url; $("#ed-audio-preview").classList.remove("hidden"); $("#ed-audio-remove").classList.remove("hidden"); }
@@ -718,22 +749,16 @@ async function attachEditorHandlers(){
 
   $("#ed-cancel").addEventListener("click", () => { state.editing = null; render(); });
 
-  $("#ed-image-file").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    editing.pendingImageFile = file;
-    editing.removeImage = false;
-    const url = URL.createObjectURL(file);
-    $("#ed-image-preview").src = url;
-    $("#ed-image-preview").classList.remove("hidden");
-    $("#ed-image-remove").classList.remove("hidden");
+  $("#add-text-block").addEventListener("click", () => {
+    editing.blocks.push({ id: crypto.randomUUID(), type:"text", text:"" });
+    renderBlocksArea();
   });
-  $("#ed-image-remove").addEventListener("click", () => {
-    editing.pendingImageFile = null; editing.removeImage = true;
-    $("#ed-image-file").value = "";
-    $("#ed-image-preview").classList.add("hidden");
-    $("#ed-image-remove").classList.add("hidden");
+  $("#add-image-block").addEventListener("click", () => {
+    editing.blocks.push({ id: crypto.randomUUID(), type:"image", path:null, caption:"" });
+    renderBlocksArea();
   });
+
+  await renderBlocksArea();
 
   $("#ed-audio-file").addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -786,22 +811,44 @@ async function attachEditorHandlers(){
     const title = $("#ed-title").value.trim();
     const category_id = $("#ed-cat").value;
     const tags = $("#ed-tags").value.split(",").map(t => t.trim()).filter(Boolean);
-    const content = $("#ed-content").value.trim();
     const msg = $("#ed-msg");
-    if(!title || !content){
-      msg.textContent = "Заполните заголовок и текст статьи."; msg.className = "form-msg error"; return;
+    const hasAnyContent = editing.blocks.some(b =>
+      (b.type === "text" && b.text && b.text.trim()) ||
+      (b.type === "image" && (b.path || b.pendingFile))
+    );
+    if(!title || !hasAnyContent){
+      msg.textContent = "Заполните заголовок и добавьте хотя бы один текстовый блок или фото."; msg.className = "form-msg error"; return;
     }
     msg.textContent = "Сохраняем…"; msg.className = "form-msg";
     $("#ed-save").disabled = true;
 
     try{
-      const payload = { title, category_id, tags, content, is_pinned: $("#ed-pinned").checked, updated_at: new Date().toISOString() };
-
-      if(editing.removeImage) payload.image_path = null;
-      if(editing.pendingImageFile){
-        const ext = (editing.pendingImageFile.name || "photo.jpg").split(".").pop() || "jpg";
-        payload.image_path = await uploadMedia(editing.pendingImageFile, "articles/images", ext);
+      // Загружаем новые фото по блокам и собираем итоговый список блоков
+      const finalBlocks = [];
+      for(const b of editing.blocks){
+        if(b.type === "text"){
+          if(b.text && b.text.trim()) finalBlocks.push({ type:"text", text: b.text.trim() });
+        } else if(b.type === "image"){
+          let path = b.path || null;
+          if(b.pendingFile){
+            const ext = (b.pendingFile.name || "photo.jpg").split(".").pop() || "jpg";
+            path = await uploadMedia(b.pendingFile, "articles/images", ext);
+          }
+          if(path) finalBlocks.push({ type:"image", path, caption: (b.caption||"").trim() });
+        }
       }
+      const content = finalBlocks.filter(b => b.type === "text").map(b => b.text).join("\n\n");
+      const firstImage = finalBlocks.find(b => b.type === "image");
+
+      const payload = {
+        title, category_id, tags,
+        content,
+        blocks: finalBlocks,
+        image_path: firstImage ? firstImage.path : null,
+        is_pinned: $("#ed-pinned").checked,
+        updated_at: new Date().toISOString()
+      };
+
       if(editing.removeAudio) payload.audio_path = null;
       if(editing.pendingAudioBlob){
         const isFile = editing.pendingAudioBlob instanceof File;
@@ -824,6 +871,86 @@ async function attachEditorHandlers(){
       msg.textContent = "Не удалось сохранить: " + err.message; msg.className = "form-msg error";
       $("#ed-save").disabled = false;
     }
+  });
+}
+
+async function renderBlocksArea(){
+  const editing = state.editing;
+  const area = $("#blocks-area");
+  const n = editing.blocks.length;
+  area.innerHTML = editing.blocks.map((b, i) => `
+    <div class="block-item" data-block="${b.id}">
+      <div class="block-head">
+        <span class="block-type-label">${b.type === "text" ? "Текст" : "Фото"}</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div class="block-move-btns">
+            <button type="button" data-move="up" data-id="${b.id}" ${i===0 ? "disabled" : ""} title="Выше">▲</button>
+            <button type="button" data-move="down" data-id="${b.id}" ${i===n-1 ? "disabled" : ""} title="Ниже">▼</button>
+          </div>
+          <button type="button" class="block-remove" data-remove="${b.id}" title="Удалить блок">✕</button>
+        </div>
+      </div>
+      ${b.type === "text" ? `
+        <textarea data-text="${b.id}" placeholder="Текст этой части статьи…">${escapeHtml(b.text||"")}</textarea>
+      ` : `
+        <div class="file-row">
+          <input type="file" accept="image/*" data-image="${b.id}">
+        </div>
+        <img class="media-preview-img ${b.previewUrl ? "" : "hidden"}" data-preview="${b.id}" src="${b.previewUrl||""}" alt="">
+        <div class="field" style="margin:10px 0 0;">
+          <input type="text" data-caption="${b.id}" value="${escapeAttr(b.caption||"")}" placeholder="Подпись к фото (необязательно)">
+        </div>
+      `}
+    </div>`).join("");
+
+  // подгружаем превью уже загруженных фото (не новых, ещё не отправленных)
+  for(const b of editing.blocks){
+    if(b.type === "image" && b.path && !b.previewUrl){
+      const url = await getSignedUrl(b.path);
+      const img = area.querySelector(`[data-preview="${b.id}"]`);
+      if(img && url){ img.src = url; img.classList.remove("hidden"); }
+    }
+  }
+
+  area.querySelectorAll("[data-text]").forEach(el => {
+    el.addEventListener("input", () => {
+      const b = editing.blocks.find(x => x.id === el.dataset.text);
+      if(b) b.text = el.value;
+    });
+  });
+  area.querySelectorAll("[data-caption]").forEach(el => {
+    el.addEventListener("input", () => {
+      const b = editing.blocks.find(x => x.id === el.dataset.caption);
+      if(b) b.caption = el.value;
+    });
+  });
+  area.querySelectorAll("[data-image]").forEach(el => {
+    el.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const b = editing.blocks.find(x => x.id === el.dataset.image);
+      b.pendingFile = file;
+      b.previewUrl = URL.createObjectURL(file);
+      const img = area.querySelector(`[data-preview="${b.id}"]`);
+      if(img){ img.src = b.previewUrl; img.classList.remove("hidden"); }
+    });
+  });
+  area.querySelectorAll("[data-move]").forEach(el => {
+    el.addEventListener("click", () => {
+      const idx = editing.blocks.findIndex(x => x.id === el.dataset.id);
+      const dir = el.dataset.move === "up" ? -1 : 1;
+      const swapWith = idx + dir;
+      if(swapWith < 0 || swapWith >= editing.blocks.length) return;
+      [editing.blocks[idx], editing.blocks[swapWith]] = [editing.blocks[swapWith], editing.blocks[idx]];
+      renderBlocksArea();
+    });
+  });
+  area.querySelectorAll("[data-remove]").forEach(el => {
+    el.addEventListener("click", () => {
+      editing.blocks = editing.blocks.filter(x => x.id !== el.dataset.remove);
+      if(!editing.blocks.length) editing.blocks.push({ id: crypto.randomUUID(), type:"text", text:"" });
+      renderBlocksArea();
+    });
   });
 }
 
