@@ -140,12 +140,13 @@
   .icon-btn:hover{ background: var(--bg); color: var(--ink); }
   .icon-btn.danger:hover{ color: var(--red); border-color: var(--red); }
 
-  .article-cover{ width:100%; height:auto; border-radius: var(--radius); margin-bottom:22px; display:block; }
+  .article-cover{ display:block; width:auto; max-width:100%; height:auto; max-height:400px; border-radius: var(--radius); margin:0 auto 24px; border:1px solid var(--line); }
   .article-detail h2{ font-size: 27px; margin: 4px 0 6px; line-height:1.25; }
   .article-detail .art-meta{ margin-bottom: 16px; }
   .article-block{ max-width: 68ch; }
-  .article-block-image{ width:100%; height:auto; border-radius: var(--radius); display:block; }
-  .article-block-caption{ font-size: 13px; color: var(--ink-soft); margin: 8px 0 0; max-width: 68ch; }
+  .article-figure{ margin: 20px 0; text-align:center; }
+  .article-figure img{ display:inline-block; max-width:100%; width:auto; height:auto; max-height:400px; border-radius: var(--radius); border:1px solid var(--line); }
+  .article-figure figcaption{ font-size: 13px; color: var(--ink-soft); margin-top:8px; }
   .article-audio{ width:100%; margin: 4px 0 20px; }
   .article-body{ white-space: pre-wrap; font-size: 16px; max-width: 68ch; color:#282B39; }
   .tag-pill{ display:inline-block; font-size:12px; color: var(--navy); background: var(--bg); border:1px solid var(--line); padding:3px 10px; border-radius: 20px; margin: 0 6px 6px 0; font-weight:500; cursor:pointer; transition: background .12s ease, border-color .12s ease; }
@@ -456,8 +457,7 @@ function render(){
 
     const bodyHtml = (a.blocks && a.blocks.length) ? a.blocks.map(b => {
       if(b.type === "image" && b.path){
-        return `<img class="article-block-image" data-media-path="${b.path}" alt="">`
-          + (b.caption ? `<p class="article-block-caption">${escapeHtml(b.caption)}</p>` : "");
+        return `<figure class="article-figure"><img data-media-path="${b.path}" alt="">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ""}</figure>`;
       }
       if(b.type === "text" && b.text){
         return `<div class="article-body article-block">${escapeHtml(b.text)}</div>`;
